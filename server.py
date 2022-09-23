@@ -16,9 +16,9 @@ templates = Jinja2Templates(directory="templates")
 async def root():
     return {"info": "I'm software for managing volunteers!"}
 
-@app.get("/items/{id}", response_class=HTMLResponse)
-async def read_item(request: Request, id: str):
-    return templates.TemplateResponse("item.html", {"request": request, "id": id})
+@app.get("/items/{id}/{name}", response_class=HTMLResponse)
+async def read_item(request: Request, id: str, name: str):
+    return templates.TemplateResponse("item.html", {"request": request, "id": id, "name": name})
 
 if __name__ == '__main__':
     run("server:app", host='0.0.0.0', port=int(getenv('PORT')))
