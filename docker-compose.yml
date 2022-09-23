@@ -1,0 +1,11 @@
+services:
+  volunteer-manager:
+    container_name: volunteer-manager
+    build:
+      context: .
+    image: volunteer-manager
+    command: ["python", "server.py"]
+    environment:
+      - PORT=2137
+    ports:
+      - "2137:2137"
