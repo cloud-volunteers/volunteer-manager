@@ -1,17 +1,15 @@
 #!/bin/bash
-# create container name variable
-containername=volunteer-manager
-# build images from docker-compose.yml
+# Warning! This script will destroy old container and recreate new one!
+# Decompose old docker container
+docker compose down
+# Build new image from docker-compose.yml
 docker compose build
-# compose docker container
-docker compose up -d
-# remove dangling <none> images
+# Remove dangling <none> images
 docker image prune -f
-# attach to container
-docker logs -f $containername
-
+# Compose new docker container
+docker compose up
 # How to use?
-# add permissions to file
+# 1) Add permissions to file
 # chmod +x docker.sh
-# execute script
+# 2) execute script
 # ./docker.sh 
