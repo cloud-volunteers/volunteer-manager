@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src = "package-loader.js"></script>
+        <title>Volunteer - {{ user.name }}</title>
+        <meta charset = "utf-8" />
+        <meta name = "author" value = "Łukasz Leszczyński, Michał Nowicki, Iulia Feican, Stanisław Krasuski" />
+        <link rel = "stylesheet" href = "style.css" type = "text/css" />
+    </head>
+    <body>
+        <script>
+            var multilang = new MultiLang('languages.json');
+            alert(multilang.get('Hello world'));
+        </script>
+        <header class = "flex flex-row bg-gradient-to-t from-emerald-600 via-emerald-400 to-emerald-500">
+            <img id = "logo" class = "flex-none m-0 w-[25%]" title = "NGO logo" src = "https://www.ajungemmari.ro/wp-content/uploads/2020/11/Logo-AM-Site.png" />
+            <div class = "flex flex-none flex-col w-[50%] place-content-center place-items-center">
+                <h1 class = "flex-auto grow shrink text-center font-bold leading-[100%]">volunteer-manager</h1>
+                <h2 class = "flex-auto grow text-center">Volunteer data</h2>
+            </div>
+            <div class = "flex flex-col shrink grow text-center place-items-end place-content-center">
+                <span class = "content-adjustments h-[60%] transition ease-out delay-100 hover:bg-gradient-to-t from-zinc-100 via-zinc-200 to-zinc-300 hover:shadow-md"></span>
+            </div>
+        </header>
+        <div class = "flex flex-row h-[100%]">
+            <div class = "h-[100%] w-[10%] flex flex-col place-items-start place-content-start bg-gradient-to-b from-emerald-600 via-emerald-400 to-emerald-500">
+                <a class = "block"></a>
+            </div>
+            <form class = "flex flex-auto w-[90%] flex-row">
+                <div class = "flex-auto">
+                    <label for = "name" class = "p-1">Name and surname</label><br />
+                    <label for = "email" class = "p-1">Email</label><br />
+                    <label for = "phone" class = "p-1">Phone number</label><br />
+                    <label for = "hasCar" class = "p-1">Has car</label><br />
+                </div>
+                <div class = "flex-auto">
+                    <input name = "name" placeholder = "Firstname and lastname" value = "{{ user.name }}" class = "m-1 bg-slate-200 border-2 border-solid border-slate-600 shadow-md shadow-slate-300" /><br />
+                    <input name = "email" placeholder = "Email address" value = "{{ user.email }}" class = "m-1 bg-slate-200 border-2 border-solid border-slate-600 shadow-md shadow-slate-300" /><br />
+                    <input name = "phone" placeholder = "Phone number" value = "{{ user.phone }}" class = "m-1 bg-slate-200 border-2 border-solid border-slate-600 shadow-md shadow-slate-300" /><br />
+                    <input name = "hasCar" type = "checkbox" checked = "{{ user.hasCar }}" class = "m-1 bg-slate-200 border-2 border-solid border-slate-600 shadow-md shadow-slate-300" /><br />
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
