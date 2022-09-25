@@ -1,0 +1,10 @@
+{
+    "en": {
+        "Hello world": "Hello world",
+        "volunteer data": "Volunteer's data"
+    },
+    "pl": {
+        "Hello world": "Witaj świecie",
+        "volunteer data": "Dane wolontariusza"
+    }
+}
