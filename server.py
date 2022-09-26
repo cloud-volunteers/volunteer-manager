@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 app = FastAPI(title='Volunteer Manager')
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 
 templates = Jinja2Templates(directory="templates")
 
