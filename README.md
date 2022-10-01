@@ -6,8 +6,11 @@ Volunteer management software made for R Systems Hackaton
 ## Test and Deploy
 
 ```
-build:
-docker-compose up --build
+build container:
+./docker.sh
+
+build locally:
+uvicorn server:app --host 0.0.0.0 --port 2137
 
 test:
 http://localhost:2137/docs
