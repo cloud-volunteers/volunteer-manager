@@ -7,6 +7,7 @@ from fastapi.templating import Jinja2Templates
 
 from common.config import Config
 from common.logging import getCustomLogger
+from app.db import database, User
 
 logger = getCustomLogger(__name__)
 
@@ -21,6 +22,20 @@ templates = Jinja2Templates(directory="templates")
 async def root():
     logger.warning('Root was called!')
     return {"info": "I'm software for managing volunteers!"}
+
+@app.on_event("startup")
+async def startup():
+    if not database.is_connected:
+        await database.connect()
+    # create a dummy entry
+    user, _ = await User.objects.get_or_create(email="test@test.com")
+    logger.debug(f'Dummy user:\n{user.toPrintableJSON()}')
+ 
+@app.on_event("shutdown")
+async def shutdown():
+    logger.info("Stopping db!")
+    if database.is_connected:
+        await database.disconnect()
 
 @app.get("/items/{id}/{name}", response_class=HTMLResponse)
 async def read_item(request: Request, id: str, name: str):

@@ -4,10 +4,27 @@ services:
     container_name: volunteer-manager
     build:
       context: .
-    command: uvicorn server:app --host 0.0.0.0 --port 2137
+    command: uvicorn app.server:app --host 0.0.0.0 --port 2137
     env_file:
       - .env
-    environment:
-      - APP_ENV=DOCKER
     ports:
       - 2137:2137
+    environment:
+      - APP_ENV=DOCKER
+      - DATABASE_URL=postgresql://user:password@db:5432/project_db
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14.5-alpine3.16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=project_db
+
+volumes:
+  postgres_data:

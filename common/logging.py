@@ -1,4 +1,4 @@
-from logging import getLogger, basicConfig, StreamHandler, Formatter
+from logging import getLogger, basicConfig, StreamHandler, Formatter, captureWarnings
 from logging import CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
 from coloredlogs import ColoredFormatter
 
@@ -22,6 +22,8 @@ LEVEL_STYLES = dict(spam=dict(color='green', faint=True),
                     critical=dict(color='red', bold=True))
 
 basicConfig(level=INFO)
+
+captureWarnings(True)
 
 consoleHeader = StreamHandler()
 consoleHeader.setFormatter(
@@ -66,3 +68,7 @@ uvicorn_error_logger.propagate = False
 uvicorn_access_logger = getLogger("uvicorn.access")
 uvicorn_access_logger.handlers.clear()
 uvicorn_access_logger.addHandler(consoleHeader)
+
+warnings_logger = getLogger("py.warnings")
+warnings_logger.propagate = False
+warnings_logger.addHandler(consoleHeader)

@@ -7,4 +7,5 @@
 **/Dockerfile*
 **/azure-pipelines*
 **/.sh
+postgres_data/*
 README.md
