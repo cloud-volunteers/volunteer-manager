@@ -2,7 +2,7 @@ from logging import getLogger, basicConfig, StreamHandler, Formatter, captureWar
 from logging import CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
 from coloredlogs import ColoredFormatter
 
-from common.config import Config
+from app.config import Config
 
 LOGGING_LEVELS = {'CRITICAL': CRITICAL,
                   'ERROR': ERROR,

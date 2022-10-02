@@ -1,13 +1,17 @@
 from argparse import ArgumentParser
 from uvicorn import run
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from tempfile import NamedTemporaryFile
+from shutil import copyfileobj
+from pathlib import Path 
 
-from common.config import Config
-from common.logging import getCustomLogger
-from app.db import database, User
+from app.config import Config
+from app.logging import getCustomLogger
+from app.db import database, Volunteer
+from app.functions import process_excel
 
 logger = getCustomLogger(__name__)
 
@@ -28,8 +32,8 @@ async def startup():
     if not database.is_connected:
         await database.connect()
     # create a dummy entry
-    user, _ = await User.objects.get_or_create(email="test@test.com")
-    logger.debug(f'Dummy user:\n{user.toPrintableJSON()}')
+    volunteer, _ = await Volunteer.objects.get_or_create(email="test@test.com")
+    logger.debug(f'Dummy volunteer:\n{volunteer.toPrintableJSON()}')
  
 @app.on_event("shutdown")
 async def shutdown():
@@ -37,12 +41,31 @@ async def shutdown():
     if database.is_connected:
         await database.disconnect()
 
-@app.get("/items/{id}/{name}", response_class=HTMLResponse)
-async def read_item(request: Request, id: str, name: str):
-    return templates.TemplateResponse("item.html", {"request": request, "id": id, "name": name})
+@app.post("/upload_excel")
+async def upload_excel_file(file: UploadFile = File(...)):
+    try:    
+        suffix = Path(file.filename).suffix.lower()
+        with NamedTemporaryFile(delete=True, suffix=suffix) as tmp:
+            copyfileobj(file.file, tmp)
+            new_data = process_excel(tmp)
+    except Exception as e:
+        logger.error(str(e))
+    finally:
+        file.file.close()
+    for data in new_data:
+        volunteer, added = await Volunteer.objects.get_or_create(
+            email=data.get('email'),
+            county=data.get('county'),
+            online=data.get('online'),
+            offline=data.get('offline'),
+            age=data.get('age')
+        )
+        if added:
+            logger.debug(f'Volunteer added or updated:\n{str(volunteer)}')
+ 
 
 @app.get("/volunteer", response_class=HTMLResponse)
-async def read_item(request: Request):
+async def get_volunteer(request: Request):
     return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "user": {"name": 'Mirek', 'email': 'mirek@email.pl', "phone": '123 456 789', "hasCar": 'Yes'}})
 
 if __name__ == '__main__':

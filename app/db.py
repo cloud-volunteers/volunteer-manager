@@ -4,7 +4,7 @@ from ormar import Integer, String, Boolean
 from sqlalchemy import MetaData, create_engine
 from json import dumps
 
-from common.config import Config
+from app.config import Config
 
 database = Database(Config.DATABASE_URL)
 metadata = MetaData()
@@ -15,13 +15,20 @@ class BaseMeta(ModelMeta):
     database = database
 
 
-class User(Model):
+class Volunteer(Model):
     class Meta(BaseMeta):
-        tablename = "users"
+        tablename = "volunteers"
 
     id: int = Integer(primary_key=True)
     email: str = String(max_length=128, unique=True, nullable=False)
     active: bool = Boolean(default=True)
+    county: str = String(max_length=128, default=None, nullable=True)
+    online: bool = Boolean(default=False)
+    offline: bool = Boolean(default=False)
+    age: int = Integer(default=None, nullable=True)
+
+    def __str__(self):
+        return dumps(self, default=lambda o: o.__dict__)
 
     def toPrintableJSON(self):
         return dumps(self, default=lambda o: o.__dict__, indent=4)
