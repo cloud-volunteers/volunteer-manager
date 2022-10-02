@@ -33,6 +33,8 @@ class Volunteer(Model):
     def toPrintableJSON(self):
         return dumps(self, default=lambda o: o.__dict__, indent=4)
 
+    def __eq__(self, other) : 
+        return self.__dict__ == other.__dict__
 
 engine = create_engine(Config.DATABASE_URL)
 metadata.create_all(engine)

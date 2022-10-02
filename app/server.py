@@ -53,16 +53,18 @@ async def upload_excel_file(file: UploadFile = File(...)):
     finally:
         file.file.close()
     for data in new_data:
-        volunteer, added = await Volunteer.objects.get_or_create(
-            email=data.get('email'),
-            county=data.get('county'),
-            online=data.get('online'),
-            offline=data.get('offline'),
-            age=data.get('age')
-        )
-        if added:
-            logger.debug(f'Volunteer added or updated:\n{str(volunteer)}')
- 
+        volunteer, created = await Volunteer.objects.get_or_create(email=data.get('email'))
+        new_volunteer = volunteer.copy(deep=True)
+        new_volunteer.county = data.get('county')
+        new_volunteer.online = data.get('online')
+        new_volunteer.offline = data.get('offline')
+        new_volunteer.age = data.get('age')
+        changed = (new_volunteer != volunteer)
+        await Volunteer.objects.bulk_update([new_volunteer])
+        if created:
+            logger.debug(f'Volunteer added:\n{str(new_volunteer)}')
+        elif changed:
+            logger.debug(f'Volunteer updated:\n{str(new_volunteer)}')
 
 @app.get("/volunteer", response_class=HTMLResponse)
 async def get_volunteer(request: Request):
