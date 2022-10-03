@@ -54,21 +54,22 @@ async def upload_excel_file(file: UploadFile = File(...)):
         file.file.close()
     for data in new_data:
         volunteer, created = await Volunteer.objects.get_or_create(email=data.get('email'))
-        new_volunteer = volunteer.copy(deep=True)
-        new_volunteer.county = data.get('county')
-        new_volunteer.online = data.get('online')
-        new_volunteer.offline = data.get('offline')
-        new_volunteer.age = data.get('age')
-        changed = (new_volunteer != volunteer)
-        await Volunteer.objects.bulk_update([new_volunteer])
-        if created:
-            logger.debug(f'Volunteer added:\n{str(new_volunteer)}')
-        elif changed:
-            logger.debug(f'Volunteer updated:\n{str(new_volunteer)}')
+        old_volunteer = volunteer.copy(deep=True)
+        volunteer.county = data.get('county')
+        volunteer.online = data.get('online')
+        volunteer.offline = data.get('offline')
+        volunteer.age = data.get('age')
+        if volunteer != old_volunteer:
+            await volunteer.update()
+            if created:
+                logger.debug(f'Volunteer added:\n{str(volunteer)}')
+            else:
+                logger.debug(f'Volunteer updated:\n{str(volunteer)}')
 
-@app.get("/volunteer", response_class=HTMLResponse)
-async def get_volunteer(request: Request):
-    return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "user": {"name": 'Mirek', 'email': 'mirek@email.pl', "phone": '123 456 789', "hasCar": 'Yes'}})
+@app.get("/volunteers/{volunteer_id}", response_class=HTMLResponse)
+async def get_volunteer(volunteer_id: int, request: Request):
+    volunteer = await Volunteer.objects.get(id=volunteer_id)
+    return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": volunteer.id, "email": volunteer.email, "online": volunteer.online, "offline": volunteer.offline, "county": volunteer.county, "age": volunteer.age}})
 
 if __name__ == '__main__':
         

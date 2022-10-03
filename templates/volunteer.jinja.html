@@ -4,7 +4,7 @@
         <meta charset = "utf-8" />
         <script src = "scripts/package-loader.js" async = "false" defer = "false"></script>
         <script src = "scripts/volunteer.js" async = "false" defer = "false"></script>
-        <title>Volunteer - {{ user.name }}</title>
+        <title>Volunteer - {{ volunteer.email }}</title>
         <meta name = "author" value = "Łukasz Leszczyński, Michał Nowicki, Iulia Feican, Stanisław Krasuski" />
         <meta name = "viewport" content = "width=device-width, initial-scale=1">
         <link rel = "stylesheet" href = "static/style.css" type = "text/css" />
@@ -25,14 +25,16 @@
                 <a class = "block m-3">Main menu</a>
             </div>
             <form class = "flex flex-auto w-[80%] flex-col"><br />
-                <h1 class = "text-center text-xl">{{ user.name }}</h1><br />
+                <h1 class = "text-center text-xl">{{ volunteer.email }}</h1><br />
                 <script _ = "on load call generate()">
                     function generate(){
                         var fields = [
-                            ["name", "Firstname and lastname"],
-                            ["email", "Email address"],
-                            ["phone", "Phone number"],
-                            ["hasCar", "Has car"]
+                            ["id", "ID"],
+                            ["email", "Email"],
+                            ["online", "Wants online"],
+                            ["offline", "Wants offline"],
+                            ["county", "County"],
+                            ["age", "Age"]
                         ];
 
                         fields.map(([name, placeholder]) => (
