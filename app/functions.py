@@ -1,5 +1,6 @@
 from pandas import ExcelFile, read_excel, DataFrame
 from hashlib import md5
+from datetime import date
 
 def email_generator(n):
     return f"{str(md5(str(n).encode('ascii')).hexdigest())}@email.com"
@@ -24,3 +25,9 @@ def process_excel(file):
     output_df['age'] = df['Age']
 
     return output_df.to_dict('records')
+
+def json_default(value):
+    if isinstance(value, date):
+        return dict(year=value.year, month=value.month, day=value.day)
+    else:
+        return value.__dict__

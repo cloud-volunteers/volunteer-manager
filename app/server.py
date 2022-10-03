@@ -66,23 +66,9 @@ async def upload_excel_file(file: UploadFile = File(...)):
             else:
                 logger.debug(f'Volunteer updated:\n{str(volunteer)}')
 
-@app.get("/volunteers/{volunteer_id}", response_class=HTMLResponse)
+# @app.get("/volunteers/{volunteer_id}", response_class=HTMLResponse)
+@app.get("/volunteers/{volunteer_id}")
 async def get_volunteer(volunteer_id: int, request: Request):
     volunteer = await Volunteer.objects.get(id=volunteer_id)
-    return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": volunteer.id, "email": volunteer.email, "online": volunteer.online, "offline": volunteer.offline, "county": volunteer.county, "age": volunteer.age}})
-
-if __name__ == '__main__':
-        
-    parser = ArgumentParser(description='Websocket_api for connection to ML models')
-    parser.add_argument('--port', dest='port', type = int,
-                    default=8000,
-                    help='port for connection')
-    parser.add_argument('--log-level', dest='log_level', type=str,
-                    default="info",
-                    help='log level')
-    args = parser.parse_args()
-    
-    run("server:app",
-         host='0.0.0.0',
-         port=args.port,
-         log_level=args.log_level)
+    # return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": volunteer.id, "email": volunteer.email, "online": volunteer.online, "offline": volunteer.offline, "county": volunteer.county, "age": volunteer.age}})
+    return volunteer

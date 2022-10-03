@@ -3,6 +3,9 @@
 ## Description
 Volunteer management software made for R Systems Hackaton
 
+## Data credits
+https://github.com/romania/localitati
+
 ## Test and Deploy
 
 ```
