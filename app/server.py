@@ -66,9 +66,7 @@ async def upload_excel_file(file: UploadFile = File(...)):
             else:
                 logger.debug(f'Volunteer updated:\n{str(volunteer)}')
 
-# @app.get("/volunteers/{volunteer_id}", response_class=HTMLResponse)
-@app.get("/volunteers/{volunteer_id}")
+@app.get("/volunteers/{volunteer_id}", response_class=HTMLResponse)
 async def get_volunteer(volunteer_id: int, request: Request):
     volunteer = await Volunteer.objects.get(id=volunteer_id)
-    # return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": volunteer.id, "email": volunteer.email, "online": volunteer.online, "offline": volunteer.offline, "county": volunteer.county, "age": volunteer.age}})
-    return volunteer
+    return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age)}})
