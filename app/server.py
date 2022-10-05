@@ -1,12 +1,13 @@
 from argparse import ArgumentParser
 from uvicorn import run
-from fastapi import FastAPI, Request, File, UploadFile
+from fastapi import FastAPI, Request, File, UploadFile, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from tempfile import NamedTemporaryFile
 from shutil import copyfileobj
-from pathlib import Path 
+from pathlib import Path
+from pydantic import BaseModel
 
 from app.config import Config
 from app.logging import getCustomLogger
@@ -21,6 +22,30 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 
 templates = Jinja2Templates(directory="templates")
+
+class Volunteer_dummy(BaseModel):
+    email: str
+    phone: str
+    county: str
+    city_sector: str
+    online: bool
+    offline: bool
+    has_car: bool
+    age: int
+    status: str
+    active: bool
+
+class Student_dummy(BaseModel):
+    email: str
+    phone: str
+    age: int
+    grade: int
+    county: str
+    city_sector: str
+    online: bool
+    offline: bool
+    community: str
+    active: bool
 
 @app.get('/')
 async def root():
@@ -66,7 +91,18 @@ async def upload_excel_file(file: UploadFile = File(...)):
             else:
                 logger.debug(f'Volunteer updated:\n{str(volunteer)}')
 
-@app.get("/volunteers/{volunteer_id}", response_class=HTMLResponse)
+# @app.get("/volunteer/{volunteer_id}", response_class=HTMLResponse)
+@app.get("/volunteer/{volunteer_id}")
 async def get_volunteer(volunteer_id: int, request: Request):
     volunteer = await Volunteer.objects.get(id=volunteer_id)
-    return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age)}})
+    # return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age)}})
+    return volunteer
+
+@app.get("/volunteers")
+async def get_volunteer(request: Request):
+    all_volunteers = await Volunteer.objects.all()
+    return all_volunteers
+
+@app.post("/volunteer")
+async def get_volunteer(volunteer: Volunteer_dummy = Depends()):
+    return volunteer
