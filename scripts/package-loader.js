@@ -1,6 +1,6 @@
 packages = ["https://unpkg.com/htmx.org@1.8.0", 
             "https://unpkg.com/hyperscript.org@0.9.7", 
-            "./multilang.js"
+            "/scripts/multilang.js"
         ]
 
 packages.forEach(element => {
