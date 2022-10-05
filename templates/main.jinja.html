@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html class = "m-0">
+    <head>
+        <meta charset = "utf-8" />
+        <script src = "/scripts/package-loader.js" async = "false" defer = "false"></script>
+        <script src = "/scripts/volunteer.js" async = "false" defer = "false"></script>
+        <title>Volunteer - {{ volunteer.email }}</title>
+        <meta name = "author" value = "Łukasz Leszczyński, Michał Nowicki, Iulia Feican, Stanisław Krasuski" />
+        <meta name = "viewport" content = "width=device-width, initial-scale=1">
+        <link rel = "stylesheet" href = "/static/style.css" type = "text/css" />
+    </head>
+    <body class = "h-full dark:bg-gradient-dark dark:text-slate-100" _ = "init set my *min-height to (window's innerHeight - 1) + 'px'">
+        <header class = "flex flex-row bg-gradient-to-t from-slate-400 via-slate-200 to-slate-300 dark:from-zinc-800 dark:via-zinc-600 dark:to-zinc-700">
+            <img id = "logo" class = "flex-none m-0 w-[25%]" title = "NGO logo" src = "https://www.ajungemmari.ro/wp-content/uploads/2020/11/Logo-AM-Site.png" />
+            <div class = "flex flex-none flex-col w-[50%] place-content-center place-items-center">
+                <h1 class = "flex-auto grow shrink text-center font-bold leading-[100%]">volunteer-manager</h1>
+                <h2 class = "flex-auto grow text-center multilang" _ = "on multilangLoad getInLang('volunteer data') put result into my.innerHTML">Volunteer data</h2>
+            </div>
+            <div class = "flex flex-col shrink grow text-center place-items-end place-content-center">
+                <span class = "content-adjustments h-[60%] transition ease-out delay-100 hover:bg-gradient-to-t from-zinc-100 via-zinc-200 to-zinc-300 hover:shadow-md"></span>
+                <div class = "hidden">
+
+                </div>
+            </div>
+        </header>
+        <div class = "flex flex-row" _ = "on every resize get the *min-height of body as an Int then set my *min-height to beep! (it - (offsetHeight of <header/>)[0]) + 'px'">
+            <div class = "h-full w-[25%] flex flex-col place-items-start place-content-start bg-gradient-to-b from-slate-400 via-slate-200 to-slate-300 dark:from-zinc-800 dark:via-zinc-600 dark:to-zinc-700" _ = "init get closest parent <div/> then get it's *min-height then set my *min-height to it">
+                <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "m-5 text-lg">Main menu</a></div>
+                <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "m-5 text-lg">Volunteer list</a></div>
+            </div>
+            <div class = "flex-auto w-[50%]" hx-trigger = "load" hx-get = "{{ filename }}"></div> <!-- In that div will the subpage load -->
+            <div class = "w-[25%]"></div>
+        </div>
+
+        <script type = "text/hyperscript">
+            def getMultiLang()
+                if no $multilang 
+                    set global multilang to beep! js return new MultiLang('languages.json') end
+                return beep! $multilang
+            end
+
+            def getInLang(key)
+                set multilang to get getMultiLang() then
+                set text to beep! get multilang.get(key)
+            end
+        </script>
+    </body>
+</html>
