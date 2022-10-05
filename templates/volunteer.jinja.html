@@ -33,16 +33,16 @@
                 <script _ = "on load call generate()">
                     function generate(){
                         var fields = [
-                            ["id", "ID"],
-                            ["email", "Email"],
-                            ["online", "Wants online"],
-                            ["offline", "Wants offline"],
-                            ["county", "County"],
-                            ["age", "Age"]
+                            ["id", "ID", "{{ volunteer.id }}"],
+                            ["email", "Email", "{{ volunteer.email }}"],
+                            ["online", "Wants online", "{{ volunteer.online }}"],
+                            ["offline", "Wants offline", "{{ volunteer.offline }}"],
+                            ["county", "County", "{{ volunteer.county }}"],
+                            ["age", "Age", "{{ volunteer.age }}"]
                         ];
 
-                        fields.map(([name, placeholder]) => (
-                            document.getElementsByTagName("form")[0].insertAdjacentHTML("beforeend", generateOutside(name, placeholder))
+                        fields.map(([name, placeholder, jinja]) => (
+                            document.getElementsByTagName("form")[0].insertAdjacentHTML("beforeend", generateOutside(name, placeholder, jinja))
                         ))
                     }
                 </script>
