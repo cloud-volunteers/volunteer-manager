@@ -8,10 +8,7 @@ services:
     ports:
       - ${APP_PORT}:${APP_PORT}
     environment:
-      - APP_NAME=VOLUNTEER-MANAGER
-      - LOGGING_LEVEL=DEBUG
-      - COLORED_LOGGING=True
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/project_db
+      - APP_ENV=DOCKER
     depends_on:
       - db
 

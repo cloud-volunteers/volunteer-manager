@@ -9,7 +9,7 @@ services:
       - APP_NAME=VOLUNTEER-MANAGER
       - LOGGING_LEVEL=DEBUG
       - COLORED_LOGGING=True
-      - DATABASE_URL=postgresql://user:password@db:5432/db
+      - DATABASE_URL=postgresql://user:password@db:5432/project_db
     depends_on:
       - db
 
@@ -20,4 +20,4 @@ services:
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=db
+      - POSTGRES_DB=project_db
