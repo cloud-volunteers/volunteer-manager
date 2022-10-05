@@ -1,4 +1,4 @@
-FROM python:3.10.7-alpine3.16
+FROM python:3.10.7-slim-buster
 
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3 -m venv $VIRTUAL_ENV
@@ -7,13 +7,18 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-COPY . .
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get autoremove -y
 
-RUN apk add --no-cache bash gcc musl-dev g++
+RUN apt-get install gcc musl-dev -y
+
+COPY . .
 
 RUN pip install --upgrade pip
 RUN pip install --compile --no-cache-dir --upgrade -r requirements.txt
 
+RUN rm -rf /var/lib/apt/lists/*
 RUN rm -rf /root/.cache
 
 CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "2137"]

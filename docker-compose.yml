@@ -4,14 +4,14 @@ services:
     container_name: volunteer-manager
     build:
       context: .
-    command: uvicorn app.server:app --host 0.0.0.0 --port 2137
-    env_file:
-      - .env
+    command: bash -c 'while !</dev/tcp/db/${DB_PORT}; do sleep 1; done; uvicorn app.server:app --host 0.0.0.0 --port ${APP_PORT}'
     ports:
-      - 2137:2137
+      - ${APP_PORT}:${APP_PORT}
     environment:
-      - APP_ENV=DOCKER
-      - DATABASE_URL=postgresql://user:password@db:5432/project_db
+      - APP_NAME=VOLUNTEER-MANAGER
+      - LOGGING_LEVEL=DEBUG
+      - COLORED_LOGGING=True
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/project_db
     depends_on:
       - db
 
@@ -20,10 +20,10 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     expose:
-      - 5432
+      - ${DB_PORT}
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=project_db
 
 volumes:
