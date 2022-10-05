@@ -4,7 +4,7 @@
         <meta charset = "utf-8" />
         <script src = "/scripts/package-loader.js" async = "false" defer = "false"></script>
         <script src = "/scripts/volunteer.js" async = "false" defer = "false"></script>
-        <title>Volunteer - {{ volunteer.email }}</title>
+        {% block title %}{% endblock %}
         <meta name = "author" value = "Łukasz Leszczyński, Michał Nowicki, Iulia Feican, Stanisław Krasuski" />
         <meta name = "viewport" content = "width=device-width, initial-scale=1">
         <link rel = "stylesheet" href = "/static/style.css" type = "text/css" />
@@ -14,7 +14,7 @@
             <img id = "logo" class = "flex-none m-0 w-[25%]" title = "NGO logo" src = "https://www.ajungemmari.ro/wp-content/uploads/2020/11/Logo-AM-Site.png" />
             <div class = "flex flex-none flex-col w-[50%] place-content-center place-items-center">
                 <h1 class = "flex-auto grow shrink text-center font-bold leading-[100%]">volunteer-manager</h1>
-                <h2 class = "flex-auto grow text-center multilang" _ = "on multilangLoad getInLang('volunteer data') put result into my.innerHTML">Volunteer data</h2>
+                <h2 class = "flex-auto grow text-center multilang" _ = "on multilangLoad getInLang('volunteer data') put result into my.innerHTML">{% block header %}{% endblock %}</h2>
             </div>
             <div class = "flex flex-col shrink grow text-center place-items-end place-content-center">
                 <span class = "content-adjustments h-[60%] transition ease-out delay-100 hover:bg-gradient-to-t from-zinc-100 via-zinc-200 to-zinc-300 hover:shadow-md"></span>
@@ -28,7 +28,7 @@
                 <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "m-5 text-lg">Main menu</a></div>
                 <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "m-5 text-lg">Volunteer list</a></div>
             </div>
-            <div class = "flex-auto w-[50%]" hx-trigger = "load" hx-get = "{{ filename }}"></div> <!-- In that div will the subpage load -->
+            <div class = "flex-auto w-[50%]">{% block content %}{% endblock %}</div> <!-- In that div will the subpage load -->
             <div class = "w-[25%]"></div>
         </div>
 
