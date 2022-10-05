@@ -2,6 +2,8 @@ from pandas import ExcelFile, read_excel, DataFrame
 from hashlib import md5
 from datetime import date
 
+from app.db import Volunteer
+
 def email_generator(n):
     return f"{str(md5(str(n).encode('ascii')).hexdigest())}@email.com"
 

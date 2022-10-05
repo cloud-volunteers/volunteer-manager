@@ -1,13 +1,13 @@
-from argparse import ArgumentParser
 from uvicorn import run
-from fastapi import FastAPI, Request, File, UploadFile, Depends
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request, File, UploadFile, Depends, status
+from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from tempfile import NamedTemporaryFile
 from shutil import copyfileobj
 from pathlib import Path
-from pydantic import BaseModel
+from typing import NamedTuple, Optional
+from json import loads, dumps
 
 from app.config import Config
 from app.logging import getCustomLogger
@@ -23,29 +23,48 @@ app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 
 templates = Jinja2Templates(directory="templates")
 
-class Volunteer_dummy(BaseModel):
+class Volunteer_dummy(NamedTuple):
     email: str
-    phone: str
-    county: str
-    city_sector: str
-    online: bool
-    offline: bool
-    has_car: bool
-    age: int
-    status: str
-    active: bool
+    phone: Optional[str] = None
+    county: Optional[str] = None
+    city_sector: Optional[str] = None
+    online: Optional[bool] = False
+    offline: Optional[bool] = False
+    has_car: Optional[bool] = False
+    age: Optional[int] = None
+    status: Optional[str] = None
+    active: Optional[bool] = True
 
-class Student_dummy(BaseModel):
+class Student_dummy(NamedTuple):
     email: str
-    phone: str
-    age: int
-    grade: int
-    county: str
-    city_sector: str
-    online: bool
-    offline: bool
-    community: str
-    active: bool
+    phone: Optional[str] = None
+    age: Optional[int] = None
+    grade: Optional[int] = None
+    county: Optional[str] = None
+    city_sector: Optional[str] = None
+    online: Optional[bool] = False
+    offline: Optional[bool] = False
+    community: Optional[str] = None
+    active: Optional[bool] = True
+
+async def add_volunteer_to_db(data):
+    volunteer, created = await Volunteer.objects.get_or_create(email=data.get('email'))
+    old_volunteer = volunteer.copy(deep=True)
+    if data.get('county') is not None:
+        volunteer.county = data.get('county')
+    volunteer.online = data.get('online')
+    volunteer.offline = data.get('offline')
+    if data.get('age') is not None:
+        volunteer.age = data.get('age')
+    if volunteer != old_volunteer:
+        await volunteer.update()
+        if created:
+            logger.debug(f'Volunteer added:\n{str(volunteer)}')
+        else:
+            logger.debug(f'Volunteer updated:\n{str(volunteer)}')
+        return volunteer
+    else:
+        return None
 
 @app.get('/')
 async def root():
@@ -75,28 +94,20 @@ async def upload_excel_file(file: UploadFile = File(...)):
             new_data = process_excel(tmp)
     except Exception as e:
         logger.error(str(e))
+        return JSONResponse(content={'error': 'Excel file can not be loaded!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
     finally:
         file.file.close()
     for data in new_data:
-        volunteer, created = await Volunteer.objects.get_or_create(email=data.get('email'))
-        old_volunteer = volunteer.copy(deep=True)
-        volunteer.county = data.get('county')
-        volunteer.online = data.get('online')
-        volunteer.offline = data.get('offline')
-        volunteer.age = data.get('age')
-        if volunteer != old_volunteer:
-            await volunteer.update()
-            if created:
-                logger.debug(f'Volunteer added:\n{str(volunteer)}')
-            else:
-                logger.debug(f'Volunteer updated:\n{str(volunteer)}')
+        await add_volunteer_to_db(data)
+    return JSONResponse(content={'error': 'Excel file successfully loaded!'}, status_code=status.HTTP_200_OK)
 
-# @app.get("/volunteer/{volunteer_id}", response_class=HTMLResponse)
-@app.get("/volunteer/{volunteer_id}")
+@app.get("/volunteer/{volunteer_id}", response_class=HTMLResponse)
 async def get_volunteer(volunteer_id: int, request: Request):
-    volunteer = await Volunteer.objects.get(id=volunteer_id)
-    # return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age)}})
-    return volunteer
+    try:
+        volunteer = await Volunteer.objects.get(id=volunteer_id)
+        return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age)}})
+    except Exception as e:
+        return JSONResponse(content={'error': 'Volunteer not found!'}, status_code=status.HTTP_404_NOT_FOUND)
 
 @app.get("/volunteers")
 async def get_volunteer(request: Request):
@@ -105,4 +116,9 @@ async def get_volunteer(request: Request):
 
 @app.post("/volunteer")
 async def get_volunteer(volunteer: Volunteer_dummy = Depends()):
-    return volunteer
+    print(Volunteer_dummy._asdict())
+    volunteer = await add_volunteer_to_db(Volunteer_dummy._asdict())
+    if volunteer is not None:
+        return volunteer
+    else:
+        return JSONResponse(content={'error': 'Volunteer could not be added!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
