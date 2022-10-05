@@ -105,9 +105,10 @@ async def upload_excel_file(file: UploadFile = File(...)):
 async def get_volunteer(volunteer_id: int, request: Request):
     try:
         volunteer = await Volunteer.objects.get(id=volunteer_id)
-        return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age)}})
     except Exception as e:
         return JSONResponse(content={'error': 'Volunteer not found!'}, status_code=status.HTTP_404_NOT_FOUND)
+
+    return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age)}})
 
 @app.get("/volunteers")
 async def get_volunteer(request: Request):

@@ -21,6 +21,9 @@ RUN pip install --compile --no-cache-dir --upgrade -r requirements.txt
 RUN rm -rf /var/lib/apt/lists/*
 RUN rm -rf /root/.cache
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "2137"]
 
 EXPOSE 2137
