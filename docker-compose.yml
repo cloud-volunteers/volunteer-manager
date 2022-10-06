@@ -15,9 +15,9 @@ services:
       - db
 
   db:
-    image: docker.io/library/mariadb:10.9.3
+    image: docker.io/library/mysql:5.7
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     expose:
       - ${DB_PORT}
     environment:
@@ -27,4 +27,4 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
 
 volumes:
-  mariadb_data:
+  mysql_data:

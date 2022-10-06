@@ -99,7 +99,7 @@ async def upload_excel_file(file: UploadFile = File(...)):
         file.file.close()
     for data in new_data:
         await add_volunteer_to_db(data)
-    return JSONResponse(content={'error': 'Excel file successfully loaded!'}, status_code=status.HTTP_200_OK)
+    return JSONResponse(content={'info': 'Excel file successfully loaded!'}, status_code=status.HTTP_200_OK)
 
 @app.get("/volunteer/{volunteer_id}", response_class=HTMLResponse)
 async def get_volunteer(volunteer_id: int, request: Request):
