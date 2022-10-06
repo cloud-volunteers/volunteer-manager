@@ -13,7 +13,7 @@ services:
   db:
     image: docker.io/library/mysql:5.7
     expose:
-      - 5432
+      - ${DB_PORT}
     environment:
       MYSQL_DATABASE: project_db
       MYSQL_USER: ${DB_USER}
