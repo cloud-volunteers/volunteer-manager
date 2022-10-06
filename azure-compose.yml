@@ -26,6 +26,6 @@ volumes:
   mysql_data:
     driver: azure_file
     driver_opts:
-      share_name: mysql
-      storage_account_name: aimlpstorage
-      storageaccountkey: T8Tt/QvEklbvHKR5uK83GW+BAXIHUfr/V7J269QqHFppRj5pBGg+JsCCAABR3B8TU9cg+WLUC6xm+AStjT3pUQ==
+      share_name: ${FILE_SHARE_NAME}
+      storage_account_name: ${STORAGE_ACCOUNT_NAME}
+      storageaccountkey: ${STORAGE_ACCOUNT_KEY}
