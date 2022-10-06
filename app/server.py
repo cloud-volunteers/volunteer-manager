@@ -11,7 +11,7 @@ from json import loads, dumps
 
 from app.config import Config
 from app.logging import getCustomLogger
-from app.db import database, Volunteer
+from app.db import database, Volunteer, Student
 from app.functions import process_excel
 
 logger = getCustomLogger(__name__)
@@ -66,6 +66,25 @@ async def add_volunteer_to_db(data):
     else:
         return None
 
+async def add_student_to_db(data):
+    student, created = await Student.objects.get_or_create(email=data.get('email'))
+    old_student = student.copy(deep=True)
+    if data.get('county') is not None:
+        student.county = data.get('county')
+    student.online = data.get('online')
+    student.offline = data.get('offline')
+    if data.get('age') is not None:
+        student.age = data.get('age')
+    if student != old_student:
+        await student.update()
+        if created:
+            logger.debug(f'Student added:\n{str(student)}')
+        else:
+            logger.debug(f'Student updated:\n{str(student)}')
+        return student
+    else:
+        return None
+
 @app.get('/')
 async def root():
     logger.warning('Root was called!')
@@ -111,15 +130,36 @@ async def get_volunteer(volunteer_id: int, request: Request):
     return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age)}})
 
 @app.get("/volunteers")
-async def get_volunteer(request: Request):
+async def get_volunteers(request: Request):
     all_volunteers = await Volunteer.objects.all()
     return all_volunteers
 
 @app.post("/volunteer")
-async def get_volunteer(volunteer: Volunteer_dummy = Depends()):
-    print(Volunteer_dummy._asdict())
-    volunteer = await add_volunteer_to_db(Volunteer_dummy._asdict())
+async def post_volunteer(dummy_volunteer: Volunteer_dummy = Depends()):
+    volunteer = await add_volunteer_to_db(dummy_volunteer._asdict())
     if volunteer is not None:
         return volunteer
     else:
         return JSONResponse(content={'error': 'Volunteer could not be added!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+@app.get("/student/{student_id}")
+async def get_student(student_id: int, request: Request):
+    try:
+        student = await Student.objects.get(id=student_id)
+    except Exception as e:
+        return JSONResponse(content={'error': 'Student not found!'}, status_code=status.HTTP_404_NOT_FOUND)
+
+    return student
+
+@app.get("/students")
+async def get_students(request: Request):
+    all_students = await Student.objects.all()
+    return all_students
+
+@app.post("/student")
+async def post_student(dummy_student: Student_dummy = Depends()):
+    student = await add_student_to_db(dummy_student._asdict())
+    if student is not None:
+        return student
+    else:
+        return JSONResponse(content={'error': 'Student could not be added!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)

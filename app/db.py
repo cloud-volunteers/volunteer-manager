@@ -56,7 +56,7 @@ class Student(Model):
     city_sector: str = String(max_length=64, default=None, nullable=True)
     online: bool = Boolean(default=False)
     offline: bool = Boolean(default=False)
-    community: str = String(max_length=128, unique=True, nullable=False)
+    community: str = String(max_length=128, unique=True, nullable=True)
     active: bool = Boolean(default=True)
 
     def __str__(self):

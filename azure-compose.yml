@@ -1,0 +1,30 @@
+services:
+  volunteer-manager:
+    image: ${ACR_IMAGE}
+    container_name: volunteer-manager
+    command: bash -c ./entrypoint.sh
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    environment:
+      - APP_ENV=DOCKER
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7.16
+    expose:
+      - ${DB_PORT}
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${APP_PORT}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql:/var/lib/mysql
+    
+volumes:
+  - name: mysql
+    azureFile:
+      sharename: mysql
+      storageAccountName: ${STORAGE_ACCOUNT_NAME}
+      storageAccountKey: ${STORAGE_ACCOUNT_KEY}

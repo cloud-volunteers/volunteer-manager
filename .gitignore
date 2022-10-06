@@ -6,4 +6,4 @@
 postgres_data/
 tailwindcss-windows-x64.exe
 .env
-azure-compose.yml
+_azure-compose.yml
