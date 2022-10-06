@@ -4,20 +4,28 @@ services:
     container_name: volunteer-manager
     command: bash -c ./entrypoint.sh
     ports:
-      - 2137:2137
+      - ${APP_PORT}:${APP_PORT}
     environment:
-      - APP_NAME=VOLUNTEER-MANAGER
-      - LOGGING_LEVEL=DEBUG
-      - COLORED_LOGGING=True
-      - DATABASE_URL=postgresql://user:password@db:5432/project_db
+      - APP_ENV=DOCKER
     depends_on:
       - db
 
   db:
-    image: docker.io/library/postgres:14.5-alpine3.16
+    image: docker.io/library/mysql:5.7
     expose:
       - 5432
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=project_db
+      MYSQL_DATABASE: project_db
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+    driver: azure_file
+    driver_opts:
+      share_name: mysql
+      storage_account_name: aimlpstorage
+      storageaccountkey: T8Tt/QvEklbvHKR5uK83GW+BAXIHUfr/V7J269QqHFppRj5pBGg+JsCCAABR3B8TU9cg+WLUC6xm+AStjT3pUQ==

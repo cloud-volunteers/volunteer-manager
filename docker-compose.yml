@@ -7,21 +7,24 @@ services:
     command: bash -c ./entrypoint.sh
     ports:
       - ${APP_PORT}:${APP_PORT}
+    env_file:
+      - .env
     environment:
       - APP_ENV=DOCKER
     depends_on:
       - db
 
   db:
-    image: docker.io/library/postgres:14.5-alpine3.16
+    image: docker.io/library/mysql:5.7
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - mysql_data:/var/lib/mysql
     expose:
       - ${DB_PORT}
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=project_db
+      MYSQL_DATABASE: project_db
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
 
 volumes:
-  postgres_data:
+  mysql_data:

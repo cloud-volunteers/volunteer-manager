@@ -8,6 +8,9 @@ from typing import Optional
 
 from app.config import Config
 
+from pymysql import install_as_MySQLdb
+install_as_MySQLdb()
+
 database = Database(Config.DATABASE_URL)
 metadata = MetaData()
 

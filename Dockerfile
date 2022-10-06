@@ -11,7 +11,7 @@ RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get autoremove -y
 
-RUN apt-get install gcc musl-dev -y
+RUN apt-get install gcc musl-dev python3-mysqldb -y
 
 COPY . .
 
