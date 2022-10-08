@@ -25,8 +25,8 @@
         </header>
         <div class = "flex flex-row" _ = "on every resize get the *min-height of body as an Int then set my *min-height to beep! (it - (offsetHeight of <header/>)[0]) + 'px'">
             <div class = "h-full w-[25%] flex flex-col place-items-start place-content-start bg-gradient-to-b from-slate-400 via-slate-200 to-slate-300 dark:from-zinc-800 dark:via-zinc-600 dark:to-zinc-700" _ = "init get closest parent <div/> then get it's *min-height then set my *min-height to it">
-                <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "m-5 text-lg">Main menu</a></div>
-                <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "m-5 text-lg">Volunteer list</a></div>
+                <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "p-5 w-full h-full text-lg" href = "/">Main menu</a></div>
+                <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "p-5 w-full h-full text-lg" href = "/volunteers">Volunteer list</a></div>
             </div>
             <div class = "flex-auto w-[50%]">{% block content %}{% endblock %}</div> <!-- In that div will the subpage load -->
             <div class = "w-[25%]"></div>
