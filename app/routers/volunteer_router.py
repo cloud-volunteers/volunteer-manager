@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Request, File, UploadFile, Depends, status
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi import APIRouter, Request, File, UploadFile, Depends, status, Form
+from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from typing import NamedTuple, Optional
 from tempfile import NamedTemporaryFile
@@ -72,15 +72,27 @@ async def get_volunteer(volunteer_id: int, request: Request):
 
     return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age)}})
 
-@router.get("/volunteers")
+@router.get("/volunteers", response_class=HTMLResponse)
 async def get_volunteers(request: Request):
     all_volunteers = await Volunteer.objects.all()
-    return all_volunteers
+    #return all_volunteers
+    return templates.TemplateResponse("volunteers.jinja.html", {"request": request, "volunteers": all_volunteers})
 
 @router.post("/volunteer")
-async def post_volunteer(dummy_volunteer: Volunteer_dummy = Depends()):
-    volunteer = await add_volunteer_to_db(dummy_volunteer._asdict())
+async def post_volunteer(id: str = Form(), email: str = Form(), online: bool = Form(), offline: bool = Form(), county: str = Form(), age: str = Form()):
+#async def post_volunteer(dummy_volunteer: Volunteer_dummy = Depends()):
+    dummy_volunteer = {
+        "id": id,
+        "email": email,
+        "online": online,
+        "offline": offline,
+        "county": county,
+        "age": int(age)
+    }
+
+    volunteer = await add_volunteer_to_db(dummy_volunteer)
     if volunteer is not None:
-        return volunteer
+        #return volunteer
+        return RedirectResponse("/volunteer/{:d}".format(int(id)))
     else:
         return JSONResponse(content={'error': 'Volunteer could not be added!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
