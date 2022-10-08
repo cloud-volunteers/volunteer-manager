@@ -93,6 +93,6 @@ async def post_volunteer(id: str = Form(), email: str = Form(), online: bool = F
     volunteer = await add_volunteer_to_db(dummy_volunteer)
     if volunteer is not None:
         #return volunteer
-        return RedirectResponse("/volunteer/{:d}".format(int(id)))
+        return RedirectResponse("/volunteer/{:d}".format(int(id)), statuscode=status.HTTP_303_SEE_OTHER)
     else:
         return JSONResponse(content={'error': 'Volunteer could not be added!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
