@@ -6,6 +6,9 @@ Volunteer management software made for R Systems Hackaton
 ## Data credits
 https://github.com/romania/localitati
 
+## Algorithm credits
+https://github.com/yorkyer/edmonds-blossom
+
 ## Test and Deploy
 
 ```

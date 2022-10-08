@@ -15,7 +15,7 @@ services:
       - db
 
   db:
-    image: docker.io/library/mysql:5.7
+    image: docker.io/library/mysql:5.7.16
     volumes:
       - mysql_data:/var/lib/mysql
     expose:
