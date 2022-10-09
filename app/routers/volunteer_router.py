@@ -17,6 +17,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 class Volunteer_dummy(NamedTuple):
+    id: int
     email: str
     phone: Optional[str] = None
     county: Optional[str] = None
@@ -29,14 +30,29 @@ class Volunteer_dummy(NamedTuple):
     active: Optional[bool] = True
 
 async def add_volunteer_to_db(data):
-    volunteer, created = await Volunteer.objects.get_or_create(email=data.get('email'))
+    id = data.get('id')
+    volunteer = await Volunteer.objects.get_or_none(id=id)
+    created = False
+
+    if(volunteer is None):
+        volunteer = await Volunteer.objects.create(id=id, email=data.get('email'))
+        created = True
+
     old_volunteer = volunteer.copy(deep=True)
+    if data.get('email') is not None:
+        volunteer.email = data.get('email')
     if data.get('county') is not None:
         volunteer.county = data.get('county')
     volunteer.online = data.get('online')
     volunteer.offline = data.get('offline')
     if data.get('age') is not None:
         volunteer.age = data.get('age')
+    if data.get('phone') is not None:
+        volunteer.phone = data.get('phone')
+    if data.get('city_sector') is not None:
+        volunteer.city_sector = data.get('city_sector')
+    volunteer.has_car = data.get('has_car')
+    volunteer.active = data.get('active')
     if volunteer != old_volunteer:
         await volunteer.update()
         if created:
@@ -70,7 +86,7 @@ async def get_volunteer(volunteer_id: int, request: Request):
     except Exception as e:
         return JSONResponse(content={'error': 'Volunteer not found!'}, status_code=status.HTTP_404_NOT_FOUND)
 
-    return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age)}})
+    return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age), "active": bool(volunteer.active), "has_car": bool(volunteer.has_car), "city_sector": str(volunteer.city_sector), "phone": str(volunteer.phone)}})
 
 @router.get("/volunteers", response_class=HTMLResponse)
 async def get_volunteers(request: Request):
@@ -79,20 +95,13 @@ async def get_volunteers(request: Request):
     return templates.TemplateResponse("volunteers.jinja.html", {"request": request, "volunteers": all_volunteers})
 
 @router.post("/volunteer")
-async def post_volunteer(id: str = Form(), email: str = Form(), online: bool = Form(), offline: bool = Form(), county: str = Form(), age: str = Form()):
+async def post_volunteer(id: str = Form(), email: str = Form(), online: bool = Form(), offline: bool = Form(), county: str = Form(), age: int = Form(), phone: str = Form(), city_sector: str = Form(), has_car: bool = Form(), active: bool = Form()):
 #async def post_volunteer(dummy_volunteer: Volunteer_dummy = Depends()):
-    dummy_volunteer = {
-        "id": id,
-        "email": email,
-        "online": online,
-        "offline": offline,
-        "county": county,
-        "age": int(age)
-    }
+    dummy_volunteer = Volunteer_dummy(id=id, email=email, online=online, offline=offline, county=county, age=age,phone=phone,has_car=has_car, city_sector=city_sector, active=active)
 
-    volunteer = await add_volunteer_to_db(dummy_volunteer)
+    volunteer = await add_volunteer_to_db(dummy_volunteer._asdict())
     if volunteer is not None:
         #return volunteer
-        return RedirectResponse("/volunteer/{:d}".format(int(id)), statuscode=status.HTTP_303_SEE_OTHER)
+        return RedirectResponse("/volunteer/{:d}".format(int(id)), status_code=status.HTTP_302_FOUND)
     else:
         return JSONResponse(content={'error': 'Volunteer could not be added!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)

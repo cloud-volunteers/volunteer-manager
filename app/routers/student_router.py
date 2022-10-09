@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Request, Depends, status
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi import APIRouter, Request, Depends, status, Form
+from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from typing import NamedTuple, Optional
 
@@ -13,6 +13,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 class Student_dummy(NamedTuple):
+    id: int
     email: str
     phone: Optional[str] = None
     age: Optional[int] = None
@@ -25,14 +26,27 @@ class Student_dummy(NamedTuple):
     active: Optional[bool] = True
 
 async def add_student_to_db(data):
-    student, created = await Student.objects.get_or_create(email=data.get('email'))
+    id = data.get('id')
+    student = await Student.objects.get_or_none(id=id)
+    if(student is None):
+        student = await Student.objects.create(id=id, email=data.get('email'))
+        created = True
+
     old_student = student.copy(deep=True)
+    if data.get('email') is not None:
+        student.email = data.get('email')
     if data.get('county') is not None:
         student.county = data.get('county')
     student.online = data.get('online')
     student.offline = data.get('offline')
     if data.get('age') is not None:
         student.age = data.get('age')
+    if data.get('phone') is not None:
+        student.phone = data.get('phone')
+    if data.get('city_sector') is not None:
+        student.city_sector = data.get('city_sector')
+    student.has_car = data.get('has_car')
+    student.active = data.get('active')
     if student != old_student:
         await student.update()
         if created:
@@ -50,17 +64,22 @@ async def get_student(student_id: int, request: Request):
     except Exception as e:
         return JSONResponse(content={'error': 'Student not found!'}, status_code=status.HTTP_404_NOT_FOUND)
 
-    return student
+    return templates.TemplateResponse("student.jinja.html", {"request": request, "student": {"id": str(student.id), "email": str(student.email), "online": str(student.online), "offline": str(student.offline), "county": str(student.county), "age": str(student.age), "active": bool(student.active), "has_car": bool(student.has_car), "city_sector": str(student.city_sector), "phone": str(student.phone)}})
 
 @router.get("/students")
 async def get_students(request: Request):
     all_students = await Student.objects.all()
-    return all_students
+    #return all_students
+    return templates.TemplateResponse("students.jinja.html", {"request": request, "students": all_students})
 
 @router.post("/student")
-async def post_student(dummy_student: Student_dummy = Depends()):
+#async def post_student(dummy_student: Student_dummy = Depends()):
+async def post_student(id: str = Form(), email: str = Form(), online: bool = Form(), offline: bool = Form(), county: str = Form(), age: int = Form(), phone: str = Form(), city_sector: str = Form(), grade: int = Form(), active: bool = Form()):
+    dummy_student = Student_dummy(id=id, email=email, online=online, offline=offline, county=county, age=age,phone=phone,grade=grade, city_sector=city_sector, active=active)
+    
     student = await add_student_to_db(dummy_student._asdict())
     if student is not None:
-        return student
+        #return student
+        return RedirectResponse("/student/{:d}".format(int(id)), statuscode=status.HTTP_303_SEE_OTHER)
     else:
         return JSONResponse(content={'error': 'Student could not be added!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
