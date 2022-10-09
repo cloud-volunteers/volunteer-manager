@@ -8,15 +8,33 @@ from app.routers import volunteer_router, student_router
 
 logger = getCustomLogger(__name__)
 
-app = FastAPI(title=Config.APP_NAME, docs_url='/docs', redoc_url=None)
+app = FastAPI(title=Config.APP_NAME,
+              description='App for managing volunteers!',
+              version='0.0.9',
+              terms_of_service='https://github.com/cloud-volunteers/volunteer-manager',
+              contact={
+                "name": "Cloud Volunteers",
+              },
+              license_info={
+                "name": "MIT License",
+                "url": "https://github.com/cloud-volunteers/volunteer-manager/blob/main/LICENSE",
+              },
+              docs_url='/docs',
+              swagger_ui_parameters={"defaultModelsExpandDepth": -1},
+              redoc_url=None)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 
-@app.get('/')
+@app.get('/', include_in_schema=False)
 async def root():
     logger.warning('Root was called!')
     return {"info": "I'm software for managing volunteers!"}
+
+@app.get('/health', include_in_schema=False)
+async def health():
+    logger.debug('Health was called!')
+    return {"health": "OK!"}
 
 @app.on_event("startup")
 async def startup():

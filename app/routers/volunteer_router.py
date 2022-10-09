@@ -29,7 +29,7 @@ class Volunteer_dummy(NamedTuple):
     status: Optional[str] = None
     active: Optional[bool] = True
 
-async def add_volunteer_to_db(data):
+async def add_volunteer_to_db(data, excel=False):
     id = data.get('id')
     volunteer = None
     
@@ -38,24 +38,20 @@ async def add_volunteer_to_db(data):
         created = False
 
     if(volunteer is None):
-        volunteer = await Volunteer.objects.create(email=data.get('email'))
-        created = True
+        if excel:
+            volunteer, created = await Volunteer.objects.get_or_create(email=data.get('email'))
+        else:
+            try:
+                volunteer, created = await Volunteer.objects.create(email=data.get('email'))
+            except Exception as e:
+                logger.error(f'{str(e)}')
+                return None
 
     old_volunteer = volunteer.copy(deep=True)
-    if data.get('email') is not None:
-        volunteer.email = data.get('email')
-    if data.get('county') is not None:
-        volunteer.county = data.get('county')
-    volunteer.online = data.get('online')
-    volunteer.offline = data.get('offline')
-    if data.get('age') is not None:
-        volunteer.age = data.get('age')
-    if data.get('phone') is not None:
-        volunteer.phone = data.get('phone')
-    if data.get('city_sector') is not None:
-        volunteer.city_sector = data.get('city_sector')
-    volunteer.has_car = data.get('has_car')
-    volunteer.active = data.get('active')
+    for field in ['email', 'county', 'online', 'offline', 'age', 'phone', 'city_sector', 'has_car', 'active']:
+        if data.get(field) is not None:
+            volunteer[field] = data.get(field)
+
     if volunteer != old_volunteer:
         await volunteer.update()
         if created:
@@ -66,7 +62,7 @@ async def add_volunteer_to_db(data):
     else:
         return None
 
-@router.post("/upload_excel")
+@router.post("/upload_excel", tags=["volunteers"])
 async def upload_volunteers_excel_file(file: UploadFile = File(...)):
     try:    
         suffix = Path(file.filename).suffix.lower()
@@ -79,10 +75,10 @@ async def upload_volunteers_excel_file(file: UploadFile = File(...)):
     finally:
         file.file.close()
     for data in new_data:
-        await add_volunteer_to_db(data)
+        await add_volunteer_to_db(data, excel=True)
     return JSONResponse(content={'info': 'Excel file successfully loaded!'}, status_code=status.HTTP_200_OK)
 
-@router.get("/volunteer/{volunteer_id}", response_class=HTMLResponse)
+@router.get("/volunteer/{volunteer_id}", response_class=HTMLResponse, tags=["volunteers"])
 async def get_volunteer(volunteer_id: int, request: Request):
     try:
         volunteer = await Volunteer.objects.get(id=volunteer_id)
@@ -91,17 +87,17 @@ async def get_volunteer(volunteer_id: int, request: Request):
 
     return templates.TemplateResponse("volunteer.jinja.html", {"request": request, "volunteer": {"id": str(volunteer.id), "email": str(volunteer.email), "online": str(volunteer.online), "offline": str(volunteer.offline), "county": str(volunteer.county), "age": str(volunteer.age), "active": bool(volunteer.active), "has_car": bool(volunteer.has_car), "city_sector": str(volunteer.city_sector), "phone": str(volunteer.phone)}})
 
-@router.get("/volunteers", response_class=HTMLResponse)
+@router.get("/volunteers", response_class=HTMLResponse, tags=["volunteers"])
 async def get_volunteers(request: Request):
     all_volunteers = await Volunteer.objects.all()
     #return all_volunteers
     return templates.TemplateResponse("volunteers.jinja.html", {"request": request, "volunteers": all_volunteers})
 
-@router.get("/volunteer")
+@router.get("/volunteer", tags=["volunteers"])
 async def new_volunteer(request: Request):
     return templates.TemplateResponse("newvolunteer.jinja.html", {"request": request})
 
-@router.post("/volunteer")
+@router.post("/volunteer", tags=["volunteers"])
 async def post_volunteer(id: str = Form(None), email: str = Form(), online: bool = Form(False), offline: bool = Form(False), county: str = Form(None), age: int = Form(None), phone: str = Form(None), city_sector: str = Form(None), has_car: bool = Form(False), active: bool = Form(False)):
 #async def post_volunteer(dummy_volunteer: Volunteer_dummy = Depends()):
     dummy_volunteer = Volunteer_dummy(id=id, email=email, online=online, offline=offline, county=county, age=age,phone=phone,has_car=has_car, city_sector=city_sector, active=active)

@@ -62,7 +62,7 @@ async def add_student_to_db(data):
     else:
         return None
 
-@router.get("/student/{student_id}")
+@router.get("/student/{student_id}", tags=["students"])
 async def get_student(student_id: int, request: Request):
     try:
         student = await Student.objects.get(id=student_id)
@@ -71,13 +71,13 @@ async def get_student(student_id: int, request: Request):
 
     return templates.TemplateResponse("student.jinja.html", {"request": request, "student": {"id": str(student.id), "email": str(student.email), "online": str(student.online), "offline": str(student.offline), "county": str(student.county), "age": str(student.age), "active": bool(student.active), "has_car": bool(student.has_car), "city_sector": str(student.city_sector), "phone": str(student.phone)}})
 
-@router.get("/students")
+@router.get("/students", tags=["students"])
 async def get_students(request: Request):
     all_students = await Student.objects.all()
     #return all_students
     return templates.TemplateResponse("students.jinja.html", {"request": request, "students": all_students})
 
-@router.post("/student")
+@router.post("/student", tags=["students"])
 #async def post_student(dummy_student: Student_dummy = Depends()):
 async def post_student(id: str = Form(None), email: str = Form(), online: bool = Form(False), offline: bool = Form(False), county: str = Form(None), age: int = Form(None), phone: str = Form(None), city_sector: str = Form(None), grade: int = Form(None), active: bool = Form(False)):
     dummy_student = Student_dummy(id=id, email=email, online=online, offline=offline, county=county, age=age,phone=phone,grade=grade, city_sector=city_sector, active=active)

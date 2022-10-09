@@ -43,6 +43,9 @@ class Volunteer(Model):
     def __eq__(self, other) : 
         return self.__dict__ == other.__dict__
 
+    def  __setitem__(self, key, value):
+        return setattr(self, key, value)
+
 class Student(Model):
     class Meta(BaseMeta):
         tablename = "students"
