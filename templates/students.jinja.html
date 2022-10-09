@@ -1,40 +1,35 @@
 {% extends "main.jinja.html" %}
-{% block title %}<title>Volunteers list</title>{% endblock %}
-{% block header %}Volunteers{% endblock %}
+{% block title %}students list{% endblock %}
+{% block header %}students{% endblock %}
 {% block content %}
-    <a href = "/volunteers" class = "w-[20%] m-2">
-        <button type = "button" class = "hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md w-full h-full">
-            Go to volunteer list
-        </button>
-    </a>
-    <table>
-        <thead class = "sticky top-0">
-            <th>ID</th>
-            <th>E-mail</th>
-            <th>Phone number</th>
-            <th>Age</th>
-            <th>Grade</th>
-            <th>County</th>
-            <th>City sector</th>
-            <th>Online</th>
-            <th>Offline</th>
-            <th>Status</th>
-            <th>Active</th>
+    <table class = "m-2">
+        <thead class = "sticky top-0 dark:bg-zinc-700 bg-zinc-400">
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">id</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">email</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">phone</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">age</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">grade</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">county</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">city sector</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">online</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">offline</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">status</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">active</th>
         </thead>
-        <tbody>
+        <tbody class = "dark:bg-zinc-800 bg-zinc-300">
             {% for student in students %}
                 <tr>
-                    <td><a href = "/student/{{ student.id }}">{{ student.id }}</a></td>
-                    <td><a href = "mailto:{{ student.email }}">{{ student.email }}</a></td>
-                    <td>{{ student.phone }}</td>
-                    <td>{{ student.age }}</td>
-                    <td>{{ student.grade }}</td>
-                    <td>{{ student.county }}</td>
-                    <td>{{ student.city_sector }}</td>
-                    <td><input type = "checkbox" readonly {% if student.online %} checked {% endif %} /></td>
-                    <td><input type = "checkbox" readonly {% if student.offline %} checked {% endif %} /></td>
-                    <td>{{ student.status }}</td>
-                    <td><input type = "checkbox" readonly {% if student.active %} checked {% endif %} /></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><a href = "/student/{{ student.id }}">{{ student.id }}</a></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><a href = "mailto:{{ student.email }}">{{ student.email }}</a></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if student.phone %}{{ student.phone }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if student.age %}{{ student.age }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if student.grade %}{{ student.grade }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if student.county %}{{ student.county }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if student.city_sector %}{{ student.city_sector }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" readonly {% if student.online %} checked {% endif %} /></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" readonly {% if student.offline %} checked {% endif %} /></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if student.status %}{{ student.status }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" readonly {% if student.active %} checked {% endif %} /></td>
                 </tr>
             {% endfor %}
         </tbody>

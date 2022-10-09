@@ -1,22 +1,22 @@
 {% extends "main.jinja.html" %}
-{% block title %}<title><script>globalThis.multLang.get("volunteer")</script> - {{ volunteer.name }}</title>{% endblock %}
-{% block header %}<script>globalThis.multLang.get("volunteer data")</script>{% endblock %}
+{% block title %}volunteer{% endblock %}
+{% block header %}volunteer data{% endblock %}
 {% block content %}
 <form class = "flex flex-auto w-full flex-col" method = "post" action = "/volunteer"><br />
     <h1 class = "text-center text-xl">{{ volunteer.email }}</h1><br />
     <script _ = "on load call generate()">
         function generate(){
             var fields = [
-                ["id", "ID", "{{ volunteer.id }}"],
-                ["email", "Email", "{{ volunteer.email }}"],
-                ["online", "Wants online", "{{ volunteer.online }}"],
-                ["offline", "Wants offline", "{{ volunteer.offline }}"],
-                ["county", "County", "{{ volunteer.county }}"],
-                ["age", "Age", "{{ volunteer.age }}"],
-                ["phone", "Phone number", "{{ volunteer.phone }}"],
-                ["city_sector", "City sector", "{{ volunteer.city_sector }}"],
-                ["has_car", "Has car?", "{{ volunteer.has_car }}"],
-                ["active", "Active?", "{{ volunteer.active }}"]
+                ["id", multLang.get("id"), "{{ volunteer.id }}"],
+                ["email", multLang.get("email"), "{{ volunteer.email }}"],
+                ["online", multLang.get("wants online"), "{{ volunteer.online }}"],
+                ["offline", multLang.get("wants offline"), "{{ volunteer.offline }}"],
+                ["county", multLang.get("county"), "{{ volunteer.county }}"],
+                ["age", multLang.get("age"), "{{ volunteer.age }}"],
+                ["phone", multLang.get("phone"), "{{ volunteer.phone }}"],
+                ["city_sector", multLang.get("city sector"), "{{ volunteer.city_sector }}"],
+                ["has_car", multLang.get("has car") + "?", "{{ volunteer.has_car }}"],
+                ["active", multLang.get("active") + "?", "{{ volunteer.active }}"]
             ];
 
             fields.map(([name, placeholder, jinja]) => (
@@ -26,9 +26,7 @@
         }
     </script>
     <a href = "/volunteers" class = "w-[20%] m-2">
-        <button type = "button" class = "hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md w-full h-full">
-            <script>globalThis.multLang.get("goto volunteers list")</script>
-        </button>
+        <button type = "button" class = "hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md w-full h-full multilang">goto volunteers list</button>
     </a>
     <div class = "last m-2 w-full flex-col flex place-items-center">
         <input type = "reset" class = "w-[20%] p-2 place-items-center hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md" />

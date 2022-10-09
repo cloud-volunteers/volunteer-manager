@@ -1,35 +1,35 @@
 {% extends "main.jinja.html" %}
-{% block title %}<title><script>globalThis.multLang.get("volunteer data")</script></title>{% endblock %}
-{% block header %}<script>globalThis.multLang.get("volunteers")</script>{% endblock %}
+{% block title %}volunteers list{% endblock %}
+{% block header %}volunteers{% endblock %}
 {% block content %}
     <table class = "m-2">
         <thead class = "sticky top-0 dark:bg-zinc-700 bg-zinc-400">
-            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">ID</th>
-            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">E-mail</th>
-            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Phone number</th>
-            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Age</th>
-            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Has car</th>
-            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">County</th>
-            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">City sector</th>
-            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Online</th>
-            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Offline</th>
-            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Status</th>
-            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Active</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">id</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">email</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">phone</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">age</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">has car</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">county</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">city sector</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">online</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">offline</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">status</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">active</th>
         </thead>
-        <tbody class = "dark:bg-zinc-800">
+        <tbody class = "dark:bg-zinc-800 bg-zinc-300">
             {% for volunteer in volunteers %}
                 <tr>
                     <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><a href = "/volunteer/{{ volunteer.id }}">{{ volunteer.id }}</a></td>
                     <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><a href = "mailto:{{ volunteer.email }}">{{ volunteer.email }}</a></td>
-                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.phone }}</td>
-                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.age }}</td>
-                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.has_car }}</td>
-                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.county }}</td>
-                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.city_sector }}</td>
-                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" readonly {% if volunteer.online %} checked {% endif %} /></td>
-                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" readonly {% if volunteer.offline %} checked {% endif %} /></td>
-                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.status }}</td>
-                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" readonly {% if volunteer.active %} checked {% endif %} /></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if volunteer.phone %}{{ volunteer.phone }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if volunteer.age %}{{ volunteer.age }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" disabled {% if volunteer.has_car %} checked {% endif %} /></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if volunteer.county %}{{ volunteer.county }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if volunteer.city_sector %}{{ volunteer.city_sector }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" disabled {% if volunteer.online %} checked {% endif %} /></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" disabled {% if volunteer.offline %} checked {% endif %} /></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if volunteer.status %}{{ volunteer.status }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" disabled {% if volunteer.active %} checked {% endif %} /></td>
                 </tr>
             {% endfor %}
         </tbody>
