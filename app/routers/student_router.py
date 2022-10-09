@@ -27,9 +27,14 @@ class Student_dummy(NamedTuple):
 
 async def add_student_to_db(data):
     id = data.get('id')
-    student = await Student.objects.get_or_none(id=id)
+    student = None
+    
+    if(id is not None):
+        student = await Student.objects.get_or_none(id=id)
+        created = False
+
     if(student is None):
-        student = await Student.objects.create(id=id, email=data.get('email'))
+        student = await Student.objects.create(email=data.get('email'))
         created = True
 
     old_student = student.copy(deep=True)
@@ -74,7 +79,7 @@ async def get_students(request: Request):
 
 @router.post("/student")
 #async def post_student(dummy_student: Student_dummy = Depends()):
-async def post_student(id: str = Form(), email: str = Form(), online: bool = Form(), offline: bool = Form(), county: str = Form(), age: int = Form(), phone: str = Form(), city_sector: str = Form(), grade: int = Form(), active: bool = Form()):
+async def post_student(id: str = Form(None), email: str = Form(), online: bool = Form(False), offline: bool = Form(False), county: str = Form(None), age: int = Form(None), phone: str = Form(None), city_sector: str = Form(None), grade: int = Form(None), active: bool = Form(False)):
     dummy_student = Student_dummy(id=id, email=email, online=online, offline=offline, county=county, age=age,phone=phone,grade=grade, city_sector=city_sector, active=active)
     
     student = await add_student_to_db(dummy_student._asdict())

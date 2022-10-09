@@ -31,11 +31,14 @@ class Volunteer_dummy(NamedTuple):
 
 async def add_volunteer_to_db(data):
     id = data.get('id')
-    volunteer = await Volunteer.objects.get_or_none(id=id)
-    created = False
+    volunteer = None
+    
+    if(id is not None):
+        volunteer = await Volunteer.objects.get_or_none(id=id)
+        created = False
 
     if(volunteer is None):
-        volunteer = await Volunteer.objects.create(id=id, email=data.get('email'))
+        volunteer = await Volunteer.objects.create(email=data.get('email'))
         created = True
 
     old_volunteer = volunteer.copy(deep=True)
@@ -94,14 +97,18 @@ async def get_volunteers(request: Request):
     #return all_volunteers
     return templates.TemplateResponse("volunteers.jinja.html", {"request": request, "volunteers": all_volunteers})
 
+@router.get("/volunteer")
+async def new_volunteer(request: Request):
+    return templates.TemplateResponse("newvolunteer.jinja.html", {"request": request})
+
 @router.post("/volunteer")
-async def post_volunteer(id: str = Form(), email: str = Form(), online: bool = Form(), offline: bool = Form(), county: str = Form(), age: int = Form(), phone: str = Form(), city_sector: str = Form(), has_car: bool = Form(), active: bool = Form()):
+async def post_volunteer(id: str = Form(None), email: str = Form(), online: bool = Form(False), offline: bool = Form(False), county: str = Form(None), age: int = Form(None), phone: str = Form(None), city_sector: str = Form(None), has_car: bool = Form(False), active: bool = Form(False)):
 #async def post_volunteer(dummy_volunteer: Volunteer_dummy = Depends()):
     dummy_volunteer = Volunteer_dummy(id=id, email=email, online=online, offline=offline, county=county, age=age,phone=phone,has_car=has_car, city_sector=city_sector, active=active)
 
     volunteer = await add_volunteer_to_db(dummy_volunteer._asdict())
     if volunteer is not None:
         #return volunteer
-        return RedirectResponse("/volunteer/{:d}".format(int(id)), status_code=status.HTTP_302_FOUND)
+        return RedirectResponse("/volunteer/{:d}".format(volunteer.id), status_code=status.HTTP_302_FOUND)
     else:
         return JSONResponse(content={'error': 'Volunteer could not be added!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
