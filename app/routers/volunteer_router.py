@@ -9,6 +9,7 @@ from pathlib import Path
 from app.logging import getCustomLogger
 from app.functions import process_excel
 from app.db import Volunteer
+from app.routers.lesson_router import add_lessons_to_db
 
 logger = getCustomLogger(__name__)
 
@@ -28,6 +29,7 @@ class Volunteer_dummy(NamedTuple):
     age: Optional[int] = None
     status: Optional[str] = None
     active: Optional[bool] = True
+
 
 async def add_volunteer_to_db(data, excel=False):
     id = data.get('id')
@@ -49,7 +51,7 @@ async def add_volunteer_to_db(data, excel=False):
                 return None
 
     old_volunteer = volunteer.copy(deep=True)
-    for field in ['email', 'county', 'online', 'offline', 'age', 'phone', 'city_sector', 'has_car', 'active']:
+    for field in ['email', 'phone', 'county', 'city_sector', 'online', 'offline', 'has_car', 'age', 'status', 'active']:
         volunteer[field] = data.get(field)
 
     if volunteer != old_volunteer:
@@ -67,20 +69,24 @@ async def webpage_excel(request: Request):
     return templates.TemplateResponse("upload_excel.jinja.html", {"request": request})
 
 @router.post("/upload_excel", tags=["volunteers"])
-async def upload_volunteers_excel_file(file: UploadFile = File(...)):
-    try:    
-        suffix = Path(file.filename).suffix.lower()
-        with NamedTemporaryFile(delete=True, suffix=suffix) as tmp:
-            copyfileobj(file.file, tmp)
-            new_data = process_excel(tmp)
-    except Exception as e:
-        logger.error(str(e))
-        return JSONResponse(content={'error': 'Excel file can not be loaded!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    finally:
-        file.file.close()
-    for data in new_data:
-        await add_volunteer_to_db(data, excel=True)
-    return JSONResponse(content={'info': 'Excel file successfully loaded!'}, status_code=status.HTTP_200_OK)
+async def upload_volunteers_excel_file(files: list[UploadFile]):
+    for file in files:
+        try:    
+            suffix = Path(file.filename).suffix.lower()
+            with NamedTemporaryFile(delete=True, suffix=suffix) as tmp:
+                copyfileobj(file.file, tmp)
+                new_data = process_excel(tmp)
+        except Exception as e:
+            logger.error(str(e))
+            return JSONResponse(content={'error': 'Excel file can not be loaded!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        finally:
+            file.file.close()
+        for data in new_data:
+            volunteer = await add_volunteer_to_db(data, excel=True)
+            if volunteer is not None:
+                await add_lessons_to_db(data, volunteer)
+
+    return RedirectResponse("/volunteers", status_code=status.HTTP_302_FOUND)
 
 @router.get("/volunteer/{volunteer_id}", response_class=HTMLResponse, tags=["volunteers"])
 async def get_volunteer(volunteer_id: int, request: Request):

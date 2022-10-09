@@ -1,10 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from app.config import Config
 from app.logging import getCustomLogger
 from app.db import database, Volunteer
-from app.routers import volunteer_router, student_router
+from app.routers import volunteer_router, student_router, lesson_router
 
 logger = getCustomLogger(__name__)
 
@@ -26,10 +27,11 @@ app = FastAPI(title=Config.APP_NAME,
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 
+templates = Jinja2Templates(directory="templates")
+
 @app.get('/', include_in_schema=False)
-async def root():
-    logger.warning('Root was called!')
-    return {"info": "I'm software for managing volunteers!"}
+async def root(request: Request):
+    return templates.TemplateResponse("index.jinja.html", {"request": request})
 
 @app.get('/health', include_in_schema=False)
 async def health():
@@ -56,3 +58,5 @@ async def shutdown():
 app.include_router(volunteer_router.router)
 
 app.include_router(student_router.router)
+
+app.include_router(lesson_router.router)

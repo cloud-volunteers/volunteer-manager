@@ -29,9 +29,9 @@ def process_excel(file):
     output_df['Saturday'] = df.apply(lambda x: get_required_values(x['Schedule - day'], ['Saturday', 'Weekend', 'Both']), axis=1)
     output_df['Sunday'] = df.apply(lambda x: get_required_values(x['Schedule - day'], ['Sunday', 'Weekend', 'Both']), axis=1)
 
-    output_df['09:00 - 12:00'] = df.apply(lambda x: get_required_values(x['Schedule - hours'], ['09:00 - 12:00']), axis=1)
-    output_df['14:00 - 16:00'] = df.apply(lambda x: get_required_values(x['Schedule - hours'], ['16:00 - 19:00']), axis=1)
-    output_df['16:00 - 19:00'] = df.apply(lambda x: get_required_values(x['Schedule - hours'], ['16:00 - 19:00']), axis=1)
+    output_df['09:00-12:00'] = df.apply(lambda x: get_required_values(x['Schedule - hours'], ['09:00 - 12:00']), axis=1)
+    output_df['14:00-16:00'] = df.apply(lambda x: get_required_values(x['Schedule - hours'], ['16:00 - 19:00']), axis=1)
+    output_df['16:00-19:00'] = df.apply(lambda x: get_required_values(x['Schedule - hours'], ['16:00 - 19:00']), axis=1)
 
     output_df['reading_and_writing_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['Help with reading and writing']), axis=1)
     output_df['romanian_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['Romanian']), axis=1)
