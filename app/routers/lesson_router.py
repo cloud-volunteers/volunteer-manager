@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, Depends, status, Form
 from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from typing import NamedTuple, Optional
+from json import dumps
 
 from app.logging import getCustomLogger
 from app.db import Volunteer, Student, Lesson
@@ -37,7 +38,6 @@ class Lesson_dummy(NamedTuple):
     week_day: Optional[str] = None
     time: Optional[str] = None
     remote: Optional[bool] = True
-    active: Optional[bool] = True
 
 async def add_lessons_to_db(data, volunteer):
     dummy_lessons = []
@@ -69,22 +69,32 @@ async def add_lessons_to_db(data, volunteer):
                                 remote = data.get('online'),
                             )
                             dummy_lessons.append(dummy_lesson)
+    print(f'Ther are {len(dummy_lessons)} lessons!')
+    await Lesson.objects.delete(volunteer=volunteer)
     for dummy_lesson in dummy_lessons:
-        lesson, created = await Lesson.objects.get_or_create(dummy_lesson._asdict())
-        if created:
-            logger.debug(f'Lesson added:\n{lesson.toPrintableJSON()}')
+        lesson = await Lesson.objects.create(
+            volunteer = dummy_lesson.volunteer,
+            student = dummy_lesson.student,
+            subject = dummy_lesson.subject,
+            week_day = dummy_lesson.week_day,
+            time = dummy_lesson.time,
+            remote = dummy_lesson.remote
+            )
+        logger.debug(f'Lesson added:\n{lesson.to_dict()}')
 
 @router.get("/lessons", response_class=HTMLResponse, tags=["lessons"])
 async def get_lessons(request: Request):
     all_lessons = await Lesson.objects.all()
-    return JSONResponse(content={'lessons': all_lessons}, status_code=status.HTTP_200_OK)
-    # return templates.TemplateResponse("lessons.jinja.html", {"request": request, "lessons": all_lessons})
+    lessons = [lesson.to_dict() for lesson in all_lessons]
+    # return JSONResponse(content={'lessons': lessons}, status_code=status.HTTP_200_OK)
+    return templates.TemplateResponse("lessons.jinja.html", {"request": request, "lessons": lessons})
 
 @router.get("/lesson/{lesson_id}", response_class=HTMLResponse, tags=["lessons"])
-async def get_volunteer(lesson_id: int, request: Request):
+async def get_lesson(lesson_id: int, request: Request):
     try:
-        lesson = await Volunteer.objects.get(id=lesson_id)
+        lesson = await Lesson.objects.get(id=lesson_id)
+        print(lesson)
     except Exception as e:
         return JSONResponse(content={'error': 'Lesson not found!'}, status_code=status.HTTP_404_NOT_FOUND)
 
-    return lesson
+    return JSONResponse(content={'lesson': lesson.to_dict()}, status_code=status.HTTP_200_OK)

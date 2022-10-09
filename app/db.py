@@ -2,7 +2,7 @@ from databases import Database
 from ormar import ForeignKey, ModelMeta, Model
 from ormar import Integer, String, Boolean, Date
 from sqlalchemy import MetaData, create_engine
-from json import dumps
+from json import dumps, loads
 from datetime import datetime, date, time
 from typing import Optional
 
@@ -46,6 +46,26 @@ class Volunteer(Model):
     def  __setitem__(self, key, value):
         return setattr(self, key, value)
 
+    def to_dict(self):
+        if isinstance(self, Lesson):
+            dict = {
+            "id": self.id,
+            "email": self.email,
+            "phone": self.phone,
+            "county": self.county,
+            "city_sector": self.city_sector,
+            "online": self.online,
+            "offline": self.offline,
+            "has_car": self.has_car,
+            "age": self.age,
+            "status": self.status,
+            "active": self.active
+            }
+            return dict
+        else:
+            type_name = self.__class__.__name__
+            raise TypeError("Unexpected type {0}".format(type_name))
+
 class Student(Model):
     class Meta(BaseMeta):
         tablename = "students"
@@ -71,6 +91,26 @@ class Student(Model):
     def __eq__(self, other) : 
         return self.__dict__ == other.__dict__
 
+    def to_dict(self):
+        if isinstance(self, Lesson):
+            dict = {
+            "id": self.id,
+            "email": self.email,
+            "phone": self.phone,
+            "age": self.age,
+            "grade": self.grade,
+            "county": self.county,
+            "city_sector": self.city_sector,
+            "online": self.online,
+            "offline": self.offline,
+            "community": self.community,
+            "active": self.active
+            }
+            return dict
+        else:
+            type_name = self.__class__.__name__
+            raise TypeError("Unexpected type {0}".format(type_name))
+
 class Lesson(Model):
     class Meta(BaseMeta):
         tablename = "lessons"
@@ -92,6 +132,26 @@ class Lesson(Model):
 
     def __eq__(self, other) : 
         return self.__dict__ == other.__dict__
+
+    def to_dict(self):
+        if isinstance(self, Lesson):
+            try:
+                student_id = self.student.id
+            except AttributeError:
+                student_id = None
+            return {
+            "id": self.id,
+            "volunteer_id": self.volunteer.id,
+            "student_id": student_id,
+            "subject": self.subject,
+            "week_day": self.week_day,
+            "time": self.time,
+            "remote": self.remote,
+            "active": self.active
+            }
+        else:
+            type_name = self.__class__.__name__
+            raise TypeError("Unexpected type {0}".format(type_name))
 
 engine = create_engine(Config.DATABASE_URL)
 metadata.create_all(engine)

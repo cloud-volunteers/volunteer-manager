@@ -1,0 +1,32 @@
+{% extends "main.jinja.html" %}
+{% block title %}lessons list{% endblock %}
+{% block header %}lessons{% endblock %}
+{% block content %}
+    <table class = "m-2">
+        <thead class = "sticky top-0 dark:bg-zinc-700 bg-zinc-400">
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">id</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">volunteer_id</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">student_id</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">subject</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">week_day</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">time</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">remote</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2 multilang">active</th>
+        </thead>
+        <tbody class = "dark:bg-zinc-800 bg-zinc-300">
+            {% for lesson in lessons %}
+                <tr>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><a href = "/lesson/{{ lesson.id }}">{{ lesson.id }}</a></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if lesson.volunteer_id %}{{ lesson.volunteer_id }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if lesson.student_id %}{{ lesson.student_id }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if lesson.subject %}{{ lesson.subject }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if lesson.week_day %}{{ lesson.week_day }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{% if lesson.time %}{{ lesson.time }}{% endif %}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" disabled {% if lesson.remote %} checked {% endif %} /></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" disabled {% if lesson.active %} checked {% endif %} /></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
