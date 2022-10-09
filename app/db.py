@@ -73,8 +73,8 @@ class Lesson(Model):
         tablename = "lessons"
 
     id: int = Integer(primary_key=True)
-    volunteer: Optional[Volunteer] = ForeignKey(Volunteer, nullable=False)
-    student: Optional[Student] = ForeignKey(Student, nullable=True)
+    volunteer: Optional[Volunteer] = ForeignKey(Volunteer, nullable=False, skip_reverse=True)
+    student: Optional[Student] = ForeignKey(Student, nullable=True, skip_reverse=True)
     subject: str = String(max_length=64, default=None, nullable=True)
     level: str = String(max_length=64, default=None, nullable=True)
     week_day: str = String(max_length=64, default=None, nullable=True)
