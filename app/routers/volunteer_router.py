@@ -32,6 +32,7 @@ class Volunteer_dummy(NamedTuple):
 async def add_volunteer_to_db(data, excel=False):
     id = data.get('id')
     volunteer = None
+    created = None
     
     if(id is not None):
         volunteer = await Volunteer.objects.get_or_none(id=id)
@@ -49,8 +50,7 @@ async def add_volunteer_to_db(data, excel=False):
 
     old_volunteer = volunteer.copy(deep=True)
     for field in ['email', 'county', 'online', 'offline', 'age', 'phone', 'city_sector', 'has_car', 'active']:
-        if data.get(field) is not None:
-            volunteer[field] = data.get(field)
+        volunteer[field] = data.get(field)
 
     if volunteer != old_volunteer:
         await volunteer.update()
@@ -61,6 +61,10 @@ async def add_volunteer_to_db(data, excel=False):
         return volunteer
     else:
         return None
+
+@router.get("/upload_excel", tags=["volunteers"])
+async def webpage_excel(request: Request):
+    return templates.TemplateResponse("upload_excel.jinja.html", {"request": request})
 
 @router.post("/upload_excel", tags=["volunteers"])
 async def upload_volunteers_excel_file(file: UploadFile = File(...)):
@@ -98,7 +102,7 @@ async def new_volunteer(request: Request):
     return templates.TemplateResponse("newvolunteer.jinja.html", {"request": request})
 
 @router.post("/volunteer", tags=["volunteers"])
-async def post_volunteer(id: str = Form(None), email: str = Form(), online: bool = Form(False), offline: bool = Form(False), county: str = Form(None), age: int = Form(None), phone: str = Form(None), city_sector: str = Form(None), has_car: bool = Form(False), active: bool = Form(False)):
+async def post_volunteer(id: int = Form(None), email: str = Form(), online: bool = Form(False), offline: bool = Form(False), county: str = Form(None), age: int = Form(None), phone: str = Form(None), city_sector: str = Form(None), has_car: bool = Form(False), active: bool = Form(False)):
 #async def post_volunteer(dummy_volunteer: Volunteer_dummy = Depends()):
     dummy_volunteer = Volunteer_dummy(id=id, email=email, online=online, offline=offline, county=county, age=age,phone=phone,has_car=has_car, city_sector=city_sector, active=active)
 

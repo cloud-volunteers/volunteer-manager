@@ -5,7 +5,7 @@
         <script src = "/scripts/package-loader.js" async = "false"></script>
         <script src = "/scripts/multilang.js"></script>
         <script src = "/scripts/field_generator.js" async = "false"></script>
-        <title>Main</title>
+        <title>volunteer-manager</title>
         <meta name = "author" value = "Łukasz Leszczyński, Michał Nowicki, Iulia Feican, Stanisław Krasuski" />
         <meta name = "viewport" content = "width=device-width, initial-scale=1">
         <link rel = "stylesheet" href = "/static/style.css" type = "text/css" />
@@ -41,6 +41,8 @@
             <div class = "h-full w-[25%] flex flex-col place-items-start place-content-start bg-gradient-to-b from-slate-400 via-slate-200 to-slate-300 dark:from-zinc-800 dark:via-zinc-600 dark:to-zinc-700" _ = "init get closest parent <div/> then get it's *min-height then set my *min-height to it">
                 <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "p-5 w-full h-full text-lg multilang" href = "/">main menu</a></div>
                 <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "p-5 w-full h-full text-lg multilang" href = "/volunteers">volunteers list</a></div>
+                <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "p-5 w-full h-full text-lg multilang" href = "/students">students list</a></div>
+                <div class = "p-2 w-full transition-regular duration-700 hover:dark:text-black hover:shadow-md hover:bg-gradient-to-b from-slate-300 via-slate-200 to-slate-400"><a class = "p-5 w-full h-full text-lg multilang" href = "/upload_excel">upload excel</a></div>
             </div>
             <div class = "flex-auto w-[50%]">{% block content %}{% endblock %}</div> <!-- In that div will the subpage load -->
             <div class = "w-[25%]"></div>

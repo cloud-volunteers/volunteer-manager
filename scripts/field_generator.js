@@ -26,7 +26,7 @@ function generateInside(name, placeholder, jinja){
         value = ""
     }
 
-    else if("age" == name)
+    else if(("age" == name) || ("grade" == name))
         type = "number"
 
     let label = `<label for = \"${name}\" class = \"align-middle\">${placeholder}</label>`

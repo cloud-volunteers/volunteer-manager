@@ -28,6 +28,7 @@ class Student_dummy(NamedTuple):
 async def add_student_to_db(data):
     id = data.get('id')
     student = None
+    created = None
     
     if(id is not None):
         student = await Student.objects.get_or_none(id=id)
@@ -77,14 +78,18 @@ async def get_students(request: Request):
     #return all_students
     return templates.TemplateResponse("students.jinja.html", {"request": request, "students": all_students})
 
+@router.get("/student", tags=["students"])
+async def new_student(request: Request):
+    return templates.TemplateResponse("newstudent.jinja.html", {"request": request})
+
 @router.post("/student", tags=["students"])
 #async def post_student(dummy_student: Student_dummy = Depends()):
-async def post_student(id: str = Form(None), email: str = Form(), online: bool = Form(False), offline: bool = Form(False), county: str = Form(None), age: int = Form(None), phone: str = Form(None), city_sector: str = Form(None), grade: int = Form(None), active: bool = Form(False)):
+async def post_student(id: int = Form(None), email: str = Form(), online: bool = Form(False), offline: bool = Form(False), county: str = Form(None), age: int = Form(None), phone: str = Form(None), city_sector: str = Form(None), grade: int = Form(None), active: bool = Form(False)):
     dummy_student = Student_dummy(id=id, email=email, online=online, offline=offline, county=county, age=age,phone=phone,grade=grade, city_sector=city_sector, active=active)
     
     student = await add_student_to_db(dummy_student._asdict())
     if student is not None:
         #return student
-        return RedirectResponse("/student/{:d}".format(int(id)), statuscode=status.HTTP_303_SEE_OTHER)
+        return RedirectResponse("/student/{:d}".format(student.id), status_code=status.HTTP_303_SEE_OTHER)
     else:
         return JSONResponse(content={'error': 'Student could not be added!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)

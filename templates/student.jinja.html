@@ -1,0 +1,35 @@
+{% extends "main.jinja.html" %}
+{% block title %}student{% endblock %}
+{% block header %}student data{% endblock %}
+{% block content %}
+<form class = "flex flex-auto w-full flex-col" method = "post" action = "/student"><br />
+    <h1 class = "text-center text-xl">{{ student.email }}</h1><br />
+    <script _ = "on load call generate()">
+        function generate(){
+            var fields = [
+                ["id", multLang.get("id"), "{{ student.id }}"],
+                ["email", multLang.get("email"), "{{ student.email }}"],
+                ["online", multLang.get("wants online"), "{{ student.online }}"],
+                ["offline", multLang.get("wants offline"), "{{ student.offline }}"],
+                ["county", multLang.get("county"), "{{ student.county }}"],
+                ["age", multLang.get("age"), "{{ student.age }}"],
+                ["phone", multLang.get("phone"), "{{ student.phone }}"],
+                ["city_sector", multLang.get("city sector"), "{{ student.city_sector }}"],
+                ["grade", multLang.get("grade"), "{{ student.grade }}"],
+                ["active", multLang.get("active") + "?", "{{ student.active }}"]
+            ];
+
+            fields.map(([name, placeholder, jinja]) => (
+                document.querySelector("form > div.last").insertAdjacentHTML("beforebegin", generateOutside(name, placeholder, jinja))
+            ))
+        }
+    </script>
+    <a href = "/students" class = "w-[20%] m-2">
+        <button type = "button" class = "hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md w-full h-full multilang">goto students list</button>
+    </a>
+    <div class = "last m-2 w-full flex-col flex place-items-center">
+        <input type = "reset" class = "w-[20%] p-2 place-items-center hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md" />
+        <input type = "submit" class = "w-[20%] p-2 place-items-center hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md" />
+    </div>
+</form>
+{% endblock %}
