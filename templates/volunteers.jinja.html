@@ -1,40 +1,35 @@
 {% extends "main.jinja.html" %}
-{% block title %}<title>Volunteers list</title>{% endblock %}
-{% block header %}Volunteers{% endblock %}
+{% block title %}<title><script>globalThis.multLang.get("volunteer data")</script></title>{% endblock %}
+{% block header %}<script>globalThis.multLang.get("volunteers")</script>{% endblock %}
 {% block content %}
-    <a href = "/volunteers" class = "w-[20%] m-2">
-        <button type = "button" class = "hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md w-full h-full">
-            Go to volunteer list
-        </button>
-    </a>
-    <table>
-        <thead class = "sticky top-0">
-            <th>ID</th>
-            <th>E-mail</th>
-            <th>Phone number</th>
-            <th>Age</th>
-            <th>Has car</th>
-            <th>County</th>
-            <th>City sector</th>
-            <th>Online</th>
-            <th>Offline</th>
-            <th>Status</th>
-            <th>Active</th>
+    <table class = "m-2">
+        <thead class = "sticky top-0 dark:bg-zinc-700 bg-zinc-400">
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">ID</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">E-mail</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Phone number</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Age</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Has car</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">County</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">City sector</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Online</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Offline</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Status</th>
+            <th class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">Active</th>
         </thead>
-        <tbody>
+        <tbody class = "dark:bg-zinc-800">
             {% for volunteer in volunteers %}
                 <tr>
-                    <td><a href = "/volunteer/{{ volunteer.id }}">{{ volunteer.id }}</a></td>
-                    <td><a href = "mailto:{{ volunteer.email }}">{{ volunteer.email }}</a></td>
-                    <td>{{ volunteer.phone }}</td>
-                    <td>{{ volunteer.age }}</td>
-                    <td>{{ volunteer.has_car }}</td>
-                    <td>{{ volunteer.county }}</td>
-                    <td>{{ volunteer.city_sector }}</td>
-                    <td><input type = "checkbox" readonly {% if volunteer.online %} checked {% endif %} /></td>
-                    <td><input type = "checkbox" readonly {% if volunteer.offline %} checked {% endif %} /></td>
-                    <td>{{ volunteer.status }}</td>
-                    <td><input type = "checkbox" readonly {% if volunteer.active %} checked {% endif %} /></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><a href = "/volunteer/{{ volunteer.id }}">{{ volunteer.id }}</a></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><a href = "mailto:{{ volunteer.email }}">{{ volunteer.email }}</a></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.phone }}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.age }}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.has_car }}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.county }}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.city_sector }}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" readonly {% if volunteer.online %} checked {% endif %} /></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" readonly {% if volunteer.offline %} checked {% endif %} /></td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2">{{ volunteer.status }}</td>
+                    <td class = "border-collapse border-[1px] border-solid dark:border-slate-200 border-zinc-700 p-2"><input type = "checkbox" readonly {% if volunteer.active %} checked {% endif %} /></td>
                 </tr>
             {% endfor %}
         </tbody>

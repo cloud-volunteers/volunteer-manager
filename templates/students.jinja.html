@@ -1,0 +1,43 @@
+{% extends "main.jinja.html" %}
+{% block title %}<title>Volunteers list</title>{% endblock %}
+{% block header %}Volunteers{% endblock %}
+{% block content %}
+    <a href = "/volunteers" class = "w-[20%] m-2">
+        <button type = "button" class = "hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md w-full h-full">
+            Go to volunteer list
+        </button>
+    </a>
+    <table>
+        <thead class = "sticky top-0">
+            <th>ID</th>
+            <th>E-mail</th>
+            <th>Phone number</th>
+            <th>Age</th>
+            <th>Grade</th>
+            <th>County</th>
+            <th>City sector</th>
+            <th>Online</th>
+            <th>Offline</th>
+            <th>Status</th>
+            <th>Active</th>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                <tr>
+                    <td><a href = "/student/{{ student.id }}">{{ student.id }}</a></td>
+                    <td><a href = "mailto:{{ student.email }}">{{ student.email }}</a></td>
+                    <td>{{ student.phone }}</td>
+                    <td>{{ student.age }}</td>
+                    <td>{{ student.grade }}</td>
+                    <td>{{ student.county }}</td>
+                    <td>{{ student.city_sector }}</td>
+                    <td><input type = "checkbox" readonly {% if student.online %} checked {% endif %} /></td>
+                    <td><input type = "checkbox" readonly {% if student.offline %} checked {% endif %} /></td>
+                    <td>{{ student.status }}</td>
+                    <td><input type = "checkbox" readonly {% if student.active %} checked {% endif %} /></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

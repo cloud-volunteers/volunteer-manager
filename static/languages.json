@@ -1,10 +1,29 @@
 {
     "en": {
         "Hello world": "Hello world",
-        "volunteer data": "Volunteer's data"
+        "volunteer": "Volunteer",
+        "volunteers": "Volunteers",
+        "volunteer data": "Volunteer's data",
+        "volunteers list": "Volunteers list",
+        "goto volunteers list": "Go to volunteer list",
+        "main menu": "Main menu"
     },
     "pl": {
         "Hello world": "Witaj świecie",
-        "volunteer data": "Dane wolontariusza"
+        "volunteer": "Wolontariusz",
+        "volunteers": "Wolontariusze",
+        "volunteer data": "Dane wolontariusza",
+        "volunteers list": "Lista wolontariuszy",
+        "goto volunteers list": "Przejdź do listy wolontariuszy",
+        "main menu": "Menu główne"
+    },
+    "ro": {
+        "Hello world": "Salut lume",
+        "volunteer": "Voluntar",
+        "volunteers": "Voluntari",
+        "volunteer data": "Datele voluntarului",
+        "volunteers list": "Lista de voluntari",
+        "goto volunteers list": "Accesați lista de voluntari",
+        "main menu": "Meniu principal"
     }
 }

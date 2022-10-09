@@ -81,3 +81,5 @@ class MultiLang {
 		};
 	}
 }
+
+globalThis.MultiLang = MultiLang
