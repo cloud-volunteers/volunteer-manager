@@ -24,6 +24,8 @@ class Volunteer(Model):
 
     id: int = Integer(primary_key=True)
     email: str = String(max_length=128, unique=True, nullable=False)
+    name: str = String(max_length=64, default=None, nullable=True)
+    surname: str = String(max_length=64, default=None, nullable=True)
     phone: str = String(max_length=64, default=None, nullable=True)
     county: str = String(max_length=64, default=None, nullable=True)
     city_sector: str = String(max_length=64, default=None, nullable=True)
@@ -50,6 +52,8 @@ class Volunteer(Model):
         if isinstance(self, Lesson):
             dict = {
             "id": self.id,
+            "name": self.name,
+            "surname": self.surname,
             "email": self.email,
             "phone": self.phone,
             "county": self.county,
@@ -71,6 +75,8 @@ class Student(Model):
         tablename = "students"
 
     id: int = Integer(primary_key=True)
+    name: str = String(max_length=64, default=None, nullable=True)
+    surname: str = String(max_length=64, default=None, nullable=True)
     email: str = String(max_length=128, unique=True, nullable=False)
     phone: str = String(max_length=64, default=None, nullable=True)
     age: int = Integer(default=None, nullable=True)
@@ -91,10 +97,15 @@ class Student(Model):
     def __eq__(self, other) : 
         return self.__dict__ == other.__dict__
 
+    def  __setitem__(self, key, value):
+        return setattr(self, key, value)
+
     def to_dict(self):
         if isinstance(self, Lesson):
             dict = {
             "id": self.id,
+            "name": self.name,
+            "surname": self.surname,
             "email": self.email,
             "phone": self.phone,
             "age": self.age,
@@ -132,6 +143,9 @@ class Lesson(Model):
 
     def __eq__(self, other) : 
         return self.__dict__ == other.__dict__
+    
+    def  __setitem__(self, key, value):
+        return setattr(self, key, value)
 
     def to_dict(self):
         if isinstance(self, Lesson):
@@ -142,6 +156,92 @@ class Lesson(Model):
             return {
             "id": self.id,
             "volunteer_id": self.volunteer.id,
+            "student_id": student_id,
+            "subject": self.subject,
+            "week_day": self.week_day,
+            "time": self.time,
+            "remote": self.remote,
+            "active": self.active
+            }
+        else:
+            type_name = self.__class__.__name__
+            raise TypeError("Unexpected type {0}".format(type_name))
+
+class Possible_Lesson(Model):
+    class Meta(BaseMeta):
+        tablename = "possible_lessons"
+
+    id: int = Integer(primary_key=True)
+    volunteer: Optional[Volunteer] = ForeignKey(Volunteer, nullable=False, skip_reverse=True)
+    subject: str = String(max_length=64, default=None, nullable=True)
+    week_day: str = String(max_length=64, default=None, nullable=True)
+    time: str = String(max_length=64, default=None, nullable=True)
+    remote: bool = Boolean(default=True)
+    active: bool = Boolean(default=True)
+
+    def __str__(self):
+        return dumps(self, default=lambda o: o.__dict__)
+
+    def toPrintableJSON(self):
+        return dumps(self, default=lambda o: o.__dict__, indent=4)
+
+    def __eq__(self, other) : 
+        return self.__dict__ == other.__dict__
+    
+    def  __setitem__(self, key, value):
+        return setattr(self, key, value)
+
+    def to_dict(self):
+        if isinstance(self, Possible_Lesson):
+            try:
+                student_id = self.student.id
+            except AttributeError:
+                student_id = None
+            return {
+            "id": self.id,
+            "volunteer_id": self.volunteer.id,
+            "subject": self.subject,
+            "week_day": self.week_day,
+            "time": self.time,
+            "remote": self.remote,
+            "active": self.active
+            }
+        else:
+            type_name = self.__class__.__name__
+            raise TypeError("Unexpected type {0}".format(type_name))
+
+class Needed_Lesson(Model):
+    class Meta(BaseMeta):
+        tablename = "meeded_lessons"
+
+    id: int = Integer(primary_key=True)
+    student: Optional[Student] = ForeignKey(Student, nullable=False, skip_reverse=True)
+    subject: str = String(max_length=64, default=None, nullable=True)
+    week_day: str = String(max_length=64, default=None, nullable=True)
+    time: str = String(max_length=64, default=None, nullable=True)
+    remote: bool = Boolean(default=True)
+    active: bool = Boolean(default=True)
+
+    def __str__(self):
+        return dumps(self, default=lambda o: o.__dict__)
+
+    def toPrintableJSON(self):
+        return dumps(self, default=lambda o: o.__dict__, indent=4)
+
+    def __eq__(self, other) : 
+        return self.__dict__ == other.__dict__
+    
+    def  __setitem__(self, key, value):
+        return setattr(self, key, value)
+
+    def to_dict(self):
+        if isinstance(self, Needed_Lesson):
+            try:
+                student_id = self.student.id
+            except AttributeError:
+                student_id = None
+            return {
+            "id": self.id,
             "student_id": student_id,
             "subject": self.subject,
             "week_day": self.week_day,

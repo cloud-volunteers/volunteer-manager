@@ -7,9 +7,9 @@ from shutil import copyfileobj
 from pathlib import Path
 
 from app.logging import getCustomLogger
-from app.functions import process_excel
+from app.functions import process_voluneteer_excel
 from app.db import Volunteer
-from app.routers.lesson_router import add_lessons_to_db
+from app.routers.lesson_router import add_possible_lessons_to_db
 
 logger = getCustomLogger(__name__)
 
@@ -64,18 +64,18 @@ async def add_volunteer_to_db(data, excel=False):
     else:
         return None
 
-@router.get("/upload_excel", tags=["volunteers"])
-async def webpage_excel(request: Request):
-    return templates.TemplateResponse("upload_excel.jinja.html", {"request": request})
+@router.get("/upload_volunteer_excel", tags=["volunteers"])
+async def webpage_volunteer_excel(request: Request):
+    return templates.TemplateResponse("upload_volunteer_excel.jinja.html", {"request": request})
 
-@router.post("/upload_excel", tags=["volunteers"])
+@router.post("/upload_volunteer_excel", tags=["volunteers"])
 async def upload_volunteers_excel_file(files: list[UploadFile]):
     for file in files:
         try:    
             suffix = Path(file.filename).suffix.lower()
             with NamedTemporaryFile(delete=True, suffix=suffix) as tmp:
                 copyfileobj(file.file, tmp)
-                new_data = process_excel(tmp)
+                new_data = process_voluneteer_excel(tmp)
         except Exception as e:
             logger.error(str(e))
             return JSONResponse(content={'error': 'Excel file can not be loaded!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
@@ -84,7 +84,7 @@ async def upload_volunteers_excel_file(files: list[UploadFile]):
         for data in new_data:
             volunteer = await add_volunteer_to_db(data, excel=True)
             if volunteer is not None:
-                await add_lessons_to_db(data, volunteer)
+                await add_possible_lessons_to_db(data, volunteer)
 
     return RedirectResponse("/volunteers", status_code=status.HTTP_302_FOUND)
 

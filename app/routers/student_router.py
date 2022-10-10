@@ -1,10 +1,15 @@
-from fastapi import APIRouter, Request, Depends, status, Form
+from fastapi import APIRouter, Request, Depends, status, Form, UploadFile
 from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from typing import NamedTuple, Optional
+from tempfile import NamedTemporaryFile
+from shutil import copyfileobj
+from pathlib import Path
 
 from app.logging import getCustomLogger
+from app.functions import process_student_excel
 from app.db import Student
+from app.routers.lesson_router import add_needed_lessons_to_db
 
 logger = getCustomLogger(__name__)
 
@@ -25,7 +30,7 @@ class Student_dummy(NamedTuple):
     community: Optional[str] = None
     active: Optional[bool] = True
 
-async def add_student_to_db(data):
+async def add_student_to_db(data, excel=False):
     id = data.get('id')
     student = None
     created = None
@@ -35,24 +40,19 @@ async def add_student_to_db(data):
         created = False
 
     if(student is None):
-        student = await Student.objects.create(email=data.get('email'))
-        created = True
+        if excel:
+            student, created = await Student.objects.get_or_create(email=data.get('email'))
+        else:
+            try:
+                student, created = await Student.objects.create(email=data.get('email'))
+            except Exception as e:
+                logger.error(f'{str(e)}')
+                return None
 
     old_student = student.copy(deep=True)
-    if data.get('email') is not None:
-        student.email = data.get('email')
-    if data.get('county') is not None:
-        student.county = data.get('county')
-    student.online = data.get('online')
-    student.offline = data.get('offline')
-    if data.get('age') is not None:
-        student.age = data.get('age')
-    if data.get('phone') is not None:
-        student.phone = data.get('phone')
-    if data.get('city_sector') is not None:
-        student.city_sector = data.get('city_sector')
-    student.has_car = data.get('has_car')
-    student.active = data.get('active')
+    for field in ['email', 'county', 'city_sector', 'online', 'offline', 'phone', 'age', 'active']:
+        student[field] = data.get(field)
+
     if student != old_student:
         await student.update()
         if created:
@@ -70,12 +70,11 @@ async def get_student(student_id: int, request: Request):
     except Exception as e:
         return JSONResponse(content={'error': 'Student not found!'}, status_code=status.HTTP_404_NOT_FOUND)
 
-    return templates.TemplateResponse("student.jinja.html", {"request": request, "student": {"id": str(student.id), "email": str(student.email), "online": str(student.online), "offline": str(student.offline), "county": str(student.county), "age": str(student.age), "active": bool(student.active), "has_car": bool(student.has_car), "city_sector": str(student.city_sector), "phone": str(student.phone)}})
+    return templates.TemplateResponse("student.jinja.html", {"request": request, "student": {"id": str(student.id), "email": str(student.email), "online": str(student.online), "offline": str(student.offline), "county": str(student.county), "age": str(student.age), "active": bool(student.active), "city_sector": str(student.city_sector), "phone": str(student.phone)}})
 
 @router.get("/students", tags=["students"])
 async def get_students(request: Request):
     all_students = await Student.objects.all()
-    #return all_students
     return templates.TemplateResponse("students.jinja.html", {"request": request, "students": all_students})
 
 @router.get("/student", tags=["students"])
@@ -93,3 +92,27 @@ async def post_student(id: int = Form(None), email: str = Form(), online: bool =
         return RedirectResponse("/student/{:d}".format(student.id), status_code=status.HTTP_303_SEE_OTHER)
     else:
         return JSONResponse(content={'error': 'Student could not be added!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+@router.get("/upload_student_excel", tags=["students"])
+async def webpage_student_excel(request: Request):
+    return templates.TemplateResponse("upload_student_excel.jinja.html", {"request": request})
+
+@router.post("/upload_student_excel", tags=["students"])
+async def upload_students_excel_file(files: list[UploadFile]):
+    for file in files:
+        try:    
+            suffix = Path(file.filename).suffix.lower()
+            with NamedTemporaryFile(delete=True, suffix=suffix) as tmp:
+                copyfileobj(file.file, tmp)
+                new_data = process_student_excel(tmp)
+        except Exception as e:
+            logger.error(str(e))
+            return JSONResponse(content={'error': 'Excel file can not be loaded!'}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        finally:
+            file.file.close()
+        for data in new_data:
+            student = await add_student_to_db(data, excel=True)
+            if student is not None:
+                await add_needed_lessons_to_db(data, student)
+
+    return RedirectResponse("/students", status_code=status.HTTP_302_FOUND)

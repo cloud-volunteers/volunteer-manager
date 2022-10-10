@@ -1,6 +1,9 @@
 from app.logging import getCustomLogger
+from logging import CRITICAL
 
 logger = getCustomLogger(__name__)
+
+logger.setLevel(CRITICAL)
 
 class Node:
     index = 0

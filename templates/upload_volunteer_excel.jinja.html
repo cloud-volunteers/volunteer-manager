@@ -1,0 +1,18 @@
+{% extends "main.jinja.html" %}
+{% block title %}upload excel{% endblock %}
+{% block header %}upload excel{% endblock %}
+{% block content %}
+<form class = "flex flex-auto w-full flex-col" method = "post" action = "/upload_volunteer_excel" enctype = "multipart/form-data"><br />
+    <h1 class = "text-center text-xl">upload excel</h1><br />
+    <a href = "/" class = "w-[20%] m-2">
+        <button type = "button" class = "hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md w-full h-full multilang">main menu</button>
+    </a>
+
+    <div class = "flex flex-row place-content-center m-2"><input name = "files" type = "file" accept = ".xls, .xlsx" multiple required /></div>
+    
+    <div class = "last m-2 w-full flex-col flex place-items-center">
+        <input type = "reset" class = "w-[20%] p-2 place-items-center hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md" />
+        <input type = "submit" class = "w-[20%] p-2 place-items-center hover:bg-gradient-to-t hover:from-slate-200 hover:to-slate-300 hover:text-black hover:shadow-md" />
+    </div>
+</form>
+{% endblock %}

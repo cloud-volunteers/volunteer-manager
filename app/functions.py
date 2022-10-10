@@ -8,7 +8,7 @@ def email_generator(n):
 def get_required_values(value, required):
     return bool(len([word for word in required if word in str(value)]))
 
-def process_excel(file):
+def process_voluneteer_excel(file):
     xls = ExcelFile(file)
     df = read_excel(xls, 'Responses')
 
@@ -66,6 +66,55 @@ def process_excel(file):
 
     return output_df.to_dict('records')
 
+def process_student_excel(file):
+    xls = ExcelFile(file)
+    df = read_excel(xls, 'program 2021-2022')
+
+    output_df = DataFrame()
+
+    output_df['email'] = df.index
+    output_df['email'] = output_df['email'].apply(email_generator)
+
+    output_df['name'] = df['Child name']
+    output_df['age'] = df['Age']
+    output_df['grade'] = df['Grade']
+
+    output_df['Monday'] = df.apply(lambda x: get_required_values(x['Schedule - day'], ['Monday', 'Week days', 'Both']), axis=1)
+    output_df['Tuesday'] = df.apply(lambda x: get_required_values(x['Schedule - day'], ['Tuesday', 'Week days', 'Both']), axis=1)
+    output_df['Wednesday'] = df.apply(lambda x: get_required_values(x['Schedule - day'], ['Wednesday', 'Week days', 'Both']), axis=1)
+    output_df['Thursday'] = df.apply(lambda x: get_required_values(x['Schedule - day'], ['Thursday', 'Week days', 'Both']), axis=1)
+    output_df['Friday'] = df.apply(lambda x: get_required_values(x['Schedule - day'], ['Friday', 'Week days', 'Both']), axis=1)
+    output_df['Saturday'] = df.apply(lambda x: get_required_values(x['Schedule - day'], ['Saturday', 'Weekend', 'Both']), axis=1)
+    output_df['Sunday'] = df.apply(lambda x: get_required_values(x['Schedule - day'], ['Sunday', 'Weekend', 'Both']), axis=1)
+
+    output_df['09:00-12:00'] = df.apply(lambda x: get_required_values(x['Schedule - hours'], ['09:00 - 12:00']), axis=1)
+    output_df['14:00-16:00'] = df.apply(lambda x: get_required_values(x['Schedule - hours'], ['16:00 - 19:00']), axis=1)
+    output_df['16:00-19:00'] = df.apply(lambda x: get_required_values(x['Schedule - hours'], ['16:00 - 19:00']), axis=1)
+
+    output_df['reading_and_writing_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['Help with reading and writing']), axis=1)
+    output_df['romanian_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['Romanian']), axis=1)
+    output_df['math_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['Math']), axis=1)
+    output_df['chemistry_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['Chemistry']), axis=1)
+    output_df['history_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['History']), axis=1)
+    output_df['physics_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['Physics']), axis=1)
+    output_df['biology_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['Biology']), axis=1)
+    output_df['french_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['French']), axis=1)
+    output_df['geography_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['Geography']), axis=1)
+    output_df['english_homework'] = df.apply(lambda x: get_required_values(x['School tutoring and homework'], ['English']), axis=1)
+
+    output_df['romanian_8th_grade_exam'] = df.apply(lambda x: get_required_values(x['Tutoring for final exams'], ['Romanian-8th grade']), axis=1)
+    output_df['romanian_12th_grade_exam'] = df.apply(lambda x: get_required_values(x['Tutoring for final exams'], ['Romanian-12th grade']), axis=1)
+    output_df['math_8th_grade_exam'] = df.apply(lambda x: get_required_values(x['Tutoring for final exams'], ['Math-8th grade']), axis=1)
+    output_df['math_12th_grade_exam'] = df.apply(lambda x: get_required_values(x['Tutoring for final exams'], ['Math-12th grade']), axis=1)
+    output_df['physics_12th_grade_exam'] = df.apply(lambda x: get_required_values(x['Tutoring for final exams'], ['Physics - 12th grade']), axis=1)
+    output_df['chemistry_12th_grade_exam'] = df.apply(lambda x: get_required_values(x['Tutoring for final exams'], ['Chemistry- 12th grade']), axis=1)
+    output_df['geography_12th_grade_exam'] = df.apply(lambda x: get_required_values(x['Tutoring for final exams'], ['Geography - 12th grade']), axis=1)
+    output_df['biology_12th_grade_exam'] = df.apply(lambda x: get_required_values(x['Tutoring for final exams'], ['Biology - 12th grade']), axis=1)
+    output_df['sociology_12th_grade_exam'] = df.apply(lambda x: get_required_values(x['Tutoring for final exams'], ['Sociology - 12th grade']), axis=1)
+    output_df['history_12th_grade_exam'] = df.apply(lambda x: get_required_values(x['Tutoring for final exams'], ['History - 12th grade']), axis=1)   
+
+    return output_df[~output_df['name'].isnull()].to_dict('records')
+
 def json_default(value):
     if isinstance(value, date):
         return dict(year=value.year, month=value.month, day=value.day)
@@ -107,3 +156,10 @@ def parse_hours(input):
             if slot_hour in hour:
                 output[slot_hour.replace(" ","")] = True
     return output
+
+# county = []
+# for item in df['County']:
+#     for subitem in str(item).split(","):
+#         county.append(subitem.strip())
+
+# print(list(set(county)).sort())

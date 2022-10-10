@@ -1,6 +1,7 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import JSONResponse
 
 from app.config import Config
 from app.logging import getCustomLogger
@@ -36,7 +37,11 @@ async def root(request: Request):
 @app.get('/health', include_in_schema=False)
 async def health():
     logger.debug('Health was called!')
-    return {"health": "OK!"}
+    try:
+        await Volunteer.objects.get(email="test@test.com")
+        return {"health": "OK!"}
+    except Exception as e:
+        return JSONResponse(content={'error': str(e)}, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 @app.on_event("startup")
 async def startup():
